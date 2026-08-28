@@ -1,0 +1,22 @@
+{
+  "name": "Mi Ranita - Country La Ranita",
+  "short_name": "Mi Ranita",
+  "description": "Portal Oficial de Propietarios y Residentes de Country La Ranita",
+  "start_url": "/owner",
+  "display": "standalone",
+  "background_color": "#f2f2f7",
+  "theme_color": "#34c759",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "img/logo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "img/logo-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

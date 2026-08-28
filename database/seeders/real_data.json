@@ -1,0 +1,919 @@
+[
+    {
+        "lot_number": 1,
+        "owner_name": "GARCIA, OLGA",
+        "phone": null,
+        "email1": "olsuga55@yahoo.com.ar",
+        "email2": "golga50@hotmail.com"
+    },
+    {
+        "lot_number": 2,
+        "owner_name": "SILVERA AGUSTIN",
+        "phone": null,
+        "email1": "agsilvera@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 3,
+        "owner_name": "Alejandro Moliné",
+        "phone": null,
+        "email1": "molinealejandro@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 4,
+        "owner_name": "LUCERO, GISELE - En Legales",
+        "phone": null,
+        "email1": "giselalucero@hotmail.com",
+        "email2": "giseleluceroa@gmail.com"
+    },
+    {
+        "lot_number": 5,
+        "owner_name": "MANGONE NESTOR",
+        "phone": null,
+        "email1": "gchidichimo@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 6,
+        "owner_name": "MARANDOLA, ALEJANDRA",
+        "phone": null,
+        "email1": "m_alejandra_m@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 7,
+        "owner_name": "SANTANA, GRACIELA En legales",
+        "phone": null,
+        "email1": "marianasantana@fibertel.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 8,
+        "owner_name": "CLARO, FERNANDO",
+        "phone": null,
+        "email1": "claro.fernando@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 9,
+        "owner_name": "ARANDA HERNAN",
+        "phone": null,
+        "email1": "male97.aranda@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 10,
+        "owner_name": "CANTELMI, RUBEN",
+        "phone": null,
+        "email1": "rubencantelmi1961@gmail.com",
+        "email2": "rubencantelmi1961@gmail.com"
+    },
+    {
+        "lot_number": 11,
+        "owner_name": "ROGGENBAU, EDGAR",
+        "phone": null,
+        "email1": "edgar.roggenbau@gmail.com",
+        "email2": "palisanchezp@gmail.com"
+    },
+    {
+        "lot_number": 12,
+        "owner_name": "RIBERA JOAQUIN",
+        "phone": null,
+        "email1": "joaquin.ribera@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 13,
+        "owner_name": "BENETTI NORMA - Legales",
+        "phone": null,
+        "email1": "normabeatrizbenetti@hotmail.com",
+        "email2": "andresvillalba3322@hotmail.com"
+    },
+    {
+        "lot_number": 14,
+        "owner_name": "SANTORA ANA",
+        "phone": null,
+        "email1": "anasantora@yahoo.com.ar",
+        "email2": "arsantora@yahoo.com.ar"
+    },
+    {
+        "lot_number": 15,
+        "owner_name": "ARIAS STELLA MARIS",
+        "phone": null,
+        "email1": "drstellarias@yahoo.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 16,
+        "owner_name": "GANTUS, DIEGO",
+        "phone": null,
+        "email1": "diego_gantus@yahoo.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 17,
+        "owner_name": "ARMENTANO, GUILLERMO",
+        "phone": null,
+        "email1": "guillearmentano@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 18,
+        "owner_name": "FARAH, MONICA",
+        "phone": null,
+        "email1": "monifar61@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 19,
+        "owner_name": "FOSINI MATIAS",
+        "phone": null,
+        "email1": "matofosini@gmail.com",
+        "email2": "matofosini@hotmail.com"
+    },
+    {
+        "lot_number": 20,
+        "owner_name": "OMAR GRANDE",
+        "phone": null,
+        "email1": "omar@speconsultores.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 21,
+        "owner_name": "CANO CODECÁ, Ma Belén/MADEO, Lucas Nicolas",
+        "phone": "11 2650 5916",
+        "email1": "escribaniacanocodeca@gmail.com",
+        "email2": "canomariabelen@gmail.com"
+    },
+    {
+        "lot_number": 22,
+        "owner_name": "SEMBEROIZ PABLO",
+        "phone": null,
+        "email1": "pablosembe@gmail.com",
+        "email2": "gudybonini@gmail.com"
+    },
+    {
+        "lot_number": 23,
+        "owner_name": "MARTIN BERNAL / DOLORES CASAL",
+        "phone": null,
+        "email1": "martin.bernal@gmail.com",
+        "email2": "dolores_casal@hotmail.com"
+    },
+    {
+        "lot_number": 24,
+        "owner_name": "BENVENUTO Jorge / BASUALDO María",
+        "phone": null,
+        "email1": "jorge.benvenuto73@gmail.com",
+        "email2": "JBenvenuto@BCYB.com.ar"
+    },
+    {
+        "lot_number": 25,
+        "owner_name": "PRADELLS, MARCELA",
+        "phone": null,
+        "email1": "mpradells@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 26,
+        "owner_name": "PLESSEN, GERMAN",
+        "phone": null,
+        "email1": "plessen@gmail.com",
+        "email2": "alvarezpaula@gmail.com"
+    },
+    {
+        "lot_number": 27,
+        "owner_name": "JUAREZ, VANESA",
+        "phone": null,
+        "email1": "vanesa_ajuarez@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 28,
+        "owner_name": "MAGLIOCCO, LEONARDO",
+        "phone": null,
+        "email1": "lmagliocco@irsa.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 29,
+        "owner_name": "PRATI, FERNANDO",
+        "phone": null,
+        "email1": "fernando.prati@gmail.com",
+        "email2": "dani_catalano@yahoo.com.ar"
+    },
+    {
+        "lot_number": 30,
+        "owner_name": "SEFERCHEOGLOU, DIEGO ANDRES",
+        "phone": null,
+        "email1": "sofidancercerdan@yahoo.com",
+        "email2": "patricia@craftcg.com"
+    },
+    {
+        "lot_number": 31,
+        "owner_name": "ESPARRICA , MARIO En Juicio",
+        "phone": null,
+        "email1": "",
+        "email2": ""
+    },
+    {
+        "lot_number": 32,
+        "owner_name": "PIEDRABUENA, Agustín",
+        "phone": null,
+        "email1": "agustinpiedrabuena16@gmail.com",
+        "email2": "birmanele@gmail.com"
+    },
+    {
+        "lot_number": 33,
+        "owner_name": "MONACCI, MARIA L - Acuerdo",
+        "phone": null,
+        "email1": "monaccilidia@yahoo.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 34,
+        "owner_name": "MONTORO, EZEQUIEL/ MONTORO, LUCAS Legales",
+        "phone": null,
+        "email1": "jorgeblasmontoro@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 35,
+        "owner_name": "BAEZ FLORENCIA",
+        "phone": null,
+        "email1": "marcelo.i.aguilera@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 36,
+        "owner_name": "MENDOZA, JUAN CARLOS",
+        "phone": null,
+        "email1": "alfredopaterno@gmail.com",
+        "email2": "juanmendoza2809@gmail.com"
+    },
+    {
+        "lot_number": 37,
+        "owner_name": "LEONARDO CANARIO",
+        "phone": null,
+        "email1": "CANARIOLEONARDO@YAHOO.COM.AR",
+        "email2": ""
+    },
+    {
+        "lot_number": 38,
+        "owner_name": "VIETA, CARINA Y SATRIANO",
+        "phone": null,
+        "email1": "gustavosatriano@hotmail.com",
+        "email2": "carinavieta@gmail.com"
+    },
+    {
+        "lot_number": 39,
+        "owner_name": "DEL MORAL,  RAMIRO",
+        "phone": null,
+        "email1": "soledadperalta@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 40,
+        "owner_name": "ROSSI, ALFREDO",
+        "phone": null,
+        "email1": "alherossi@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 41,
+        "owner_name": "FERNANDEZ, CLAUDIO M.",
+        "phone": null,
+        "email1": "claudiomarcelofernandez@yahoo.com.ar",
+        "email2": "lalypetri66@gmail.com"
+    },
+    {
+        "lot_number": 42,
+        "owner_name": "PETKOVSEK, DANIELA ANA",
+        "phone": null,
+        "email1": "dpetkovsek@gmail.com",
+        "email2": "rsantolaria@gmail.com"
+    },
+    {
+        "lot_number": 43,
+        "owner_name": "MARCHESI , SEBASTIAN",
+        "phone": "(011) 15 4447 0155",
+        "email1": "todobulonera@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 44,
+        "owner_name": "GONZALEZ STEGEMANN,  MARIA",
+        "phone": null,
+        "email1": "eliamegs@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 45,
+        "owner_name": "PINZON GARZON, SANDRA",
+        "phone": null,
+        "email1": "",
+        "email2": ""
+    },
+    {
+        "lot_number": 46,
+        "owner_name": "FERNANDEZ ANSELMI MELINA",
+        "phone": null,
+        "email1": "lucianopallarobattagliese@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 47,
+        "owner_name": "ORDUÑA, ALFREDO",
+        "phone": null,
+        "email1": "polo1.motors@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 48,
+        "owner_name": "AUDISIO IGNACIO",
+        "phone": null,
+        "email1": "ignacio.audisio@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 49,
+        "owner_name": "PHILPOTT , WILLIAM",
+        "phone": null,
+        "email1": "verophilpott@yahoo.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 50,
+        "owner_name": "RUZO , GERARDO",
+        "phone": null,
+        "email1": "gerardoruzo1952@hotmail.com",
+        "email2": "jeremias.manuel.diaz@gmail.com"
+    },
+    {
+        "lot_number": 51,
+        "owner_name": "ESPARRICA , MARIO En juicio",
+        "phone": null,
+        "email1": "ESPARRICA,MARIOEnjuicio",
+        "email2": ""
+    },
+    {
+        "lot_number": 52,
+        "owner_name": "Gagliardini Facundo",
+        "phone": null,
+        "email1": "facugagliar@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 53,
+        "owner_name": "FOGLIA FRANCISCO",
+        "phone": null,
+        "email1": "foglia.francisco@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 54,
+        "owner_name": "COBOS, ALFREDO",
+        "phone": null,
+        "email1": "alfredo.cobos@consejo.org.ar",
+        "email2": "alfredocobos@macro.com.ar"
+    },
+    {
+        "lot_number": 55,
+        "owner_name": "PANGARO  , OSCAR MARIO",
+        "phone": "(011) 15 6159 0624",
+        "email1": "mariopangaro@yahoo.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 56,
+        "owner_name": "FUSTER, DIEGO",
+        "phone": null,
+        "email1": "dfuster43@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 57,
+        "owner_name": "SUSBIELLES, MARTIN",
+        "phone": null,
+        "email1": "martinsusbielles@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 58,
+        "owner_name": "LABONIA , WALTER",
+        "phone": null,
+        "email1": "wlabonia@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 59,
+        "owner_name": "BERTOTTI, JOSE",
+        "phone": null,
+        "email1": "jose.bertotti@medtronic.com",
+        "email2": "virgizuvic@gmail.com"
+    },
+    {
+        "lot_number": 60,
+        "owner_name": "TORELLA , SILVINA",
+        "phone": null,
+        "email1": "edgardozlatanoff@yahoo.com.ar",
+        "email2": "silvinatorella@yahoo.com.ar//silvinatorella@gmail.com"
+    },
+    {
+        "lot_number": 61,
+        "owner_name": "VERNENGO, PABLO",
+        "phone": null,
+        "email1": "vernengo59@gmail.com",
+        "email2": "noelia.dastolfo@gmail.com"
+    },
+    {
+        "lot_number": 62,
+        "owner_name": "OTERO / ALBORNOZ",
+        "phone": null,
+        "email1": "saotero56@yahoo.com.ar",
+        "email2": "lili.albornoz6@hotmail.com"
+    },
+    {
+        "lot_number": 63,
+        "owner_name": "LEONARDI, MARCELO En Juicio",
+        "phone": null,
+        "email1": "marceloleonardi@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 64,
+        "owner_name": "LASSERRE , J.PABLO",
+        "phone": null,
+        "email1": "juampilasserre@fibertel.com.ar",
+        "email2": "luciana@viajesbenidorm.com.ar"
+    },
+    {
+        "lot_number": 65,
+        "owner_name": "CARLOS BOVERI",
+        "phone": null,
+        "email1": "carlosdanteboveri@yahoo.com.ar",
+        "email2": "11-5312-4935"
+    },
+    {
+        "lot_number": 66,
+        "owner_name": "SAAVEDRA , PABLO Y LAREO",
+        "phone": null,
+        "email1": "saavedra_cecilia@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 67,
+        "owner_name": "ACKERMAN, MARIO EDUARDO",
+        "phone": null,
+        "email1": "marioackerman@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 68,
+        "owner_name": "ACKERMAN, MARIO EDUARDO",
+        "phone": null,
+        "email1": "marioackerman@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 69,
+        "owner_name": "GARCIA VARA ,  MARCELO",
+        "phone": null,
+        "email1": "mgarciavara@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 70,
+        "owner_name": "BURIS, NICOLAS",
+        "phone": null,
+        "email1": "nicolasburis@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 71,
+        "owner_name": "PENELA, PABLO",
+        "phone": null,
+        "email1": "pablo.penela@surleben.com.ar",
+        "email2": "pablo.penela@sasconsultores.com.ar"
+    },
+    {
+        "lot_number": 72,
+        "owner_name": "PENELA , PABLO",
+        "phone": null,
+        "email1": "pablo.penela@sasconsultores.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 73,
+        "owner_name": "ESPARRICA , MARIO En juicio",
+        "phone": null,
+        "email1": "",
+        "email2": ""
+    },
+    {
+        "lot_number": 74,
+        "owner_name": "AMAYA ANDRES",
+        "phone": null,
+        "email1": "aamaya.alethia@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 75,
+        "owner_name": "REY, DANIELA",
+        "phone": null,
+        "email1": "rey.daniela@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 76,
+        "owner_name": "GARCIA SILVIO SIXTO",
+        "phone": null,
+        "email1": "silver@silverpropiedades.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 77,
+        "owner_name": "SALADINO, VALERIA",
+        "phone": null,
+        "email1": "valesaladino@gmail.com",
+        "email2": "mmcosen@gmail.com"
+    },
+    {
+        "lot_number": 78,
+        "owner_name": "CASTRO PAULA",
+        "phone": null,
+        "email1": "pck_160@yahoo.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 79,
+        "owner_name": "RUBISTEIN  , FEDERICO",
+        "phone": null,
+        "email1": "federico.rubinstein@gmail.com",
+        "email2": "mariel.nogues@gmail.com"
+    },
+    {
+        "lot_number": 80,
+        "owner_name": "GADEA, WALTER",
+        "phone": null,
+        "email1": "wmg.arq@fibertel.com.ar",
+        "email2": "dgodoy@mimo.com.ar"
+    },
+    {
+        "lot_number": 81,
+        "owner_name": "CAMBACERES , EUGENIO",
+        "phone": null,
+        "email1": "eugecamba@yahoo.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 82,
+        "owner_name": "D´ONOFRIO , CARLOS",
+        "phone": null,
+        "email1": "carloshoraciod@yahoo.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 83,
+        "owner_name": "GRECCO , MARCELO",
+        "phone": null,
+        "email1": "MARCELOGRECCO65@GMAIL.COM",
+        "email2": "silvinacrotti@gmail.com"
+    },
+    {
+        "lot_number": 84,
+        "owner_name": "GOMEZ MURIEGA YANINA",
+        "phone": null,
+        "email1": "yanigomezmuringa@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 85,
+        "owner_name": "BELLUSCHI , PAULO FRANCISCO",
+        "phone": null,
+        "email1": "pb@alchemyvalores.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 86,
+        "owner_name": "BELLUSCHI, PAULO FRANCISCO",
+        "phone": null,
+        "email1": "",
+        "email2": ""
+    },
+    {
+        "lot_number": 87,
+        "owner_name": "TESTA MARCELO",
+        "phone": null,
+        "email1": "marcelogtesta@yahoo.com.ar",
+        "email2": "susana_reif@yahoo.com"
+    },
+    {
+        "lot_number": 88,
+        "owner_name": "PROL, LUCIANA",
+        "phone": null,
+        "email1": "",
+        "email2": "lucianaprolc@gmail.com"
+    },
+    {
+        "lot_number": 89,
+        "owner_name": "MACCIO ALEJANDRA/ CANE GONZALO",
+        "phone": null,
+        "email1": "admmaccio@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 90,
+        "owner_name": "SILVA, VELACION GILBERTO",
+        "phone": null,
+        "email1": "gilbertosilva@brownesurvey.com",
+        "email2": "matiasraele@hotmail.com"
+    },
+    {
+        "lot_number": 91,
+        "owner_name": "ESPARRICA, MARIO En juicio",
+        "phone": null,
+        "email1": "",
+        "email2": ""
+    },
+    {
+        "lot_number": 92,
+        "owner_name": "CANDIANO PEDRO",
+        "phone": null,
+        "email1": "candianopedro@gmail.com",
+        "email2": "Solgcarvajal@hotmail.com"
+    },
+    {
+        "lot_number": 93,
+        "owner_name": "VALLEDOR LASTRA, MARIO",
+        "phone": "(011) 15 4473 0985",
+        "email1": "mvalledorlastra@gmail.com",
+        "email2": "bellomarcelo333@gmail.com"
+    },
+    {
+        "lot_number": 94,
+        "owner_name": "POMPOSIELLO JUAN I.",
+        "phone": null,
+        "email1": "juanpomposiello@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 95,
+        "owner_name": "CAROSSINO, MARTÍN",
+        "phone": null,
+        "email1": "mcarossino@hotmail.com",
+        "email2": "sbolzicco@hotmail.com"
+    },
+    {
+        "lot_number": 96,
+        "owner_name": "CAROSSINO, MARTÍN",
+        "phone": null,
+        "email1": "",
+        "email2": ""
+    },
+    {
+        "lot_number": 97,
+        "owner_name": "CASANOVAS, GABRIELA",
+        "phone": null,
+        "email1": "andres.sanchez@fibertel.com.ar",
+        "email2": "gaby.casanovas13@gmail.com"
+    },
+    {
+        "lot_number": 98,
+        "owner_name": "UKI GOÑI",
+        "phone": null,
+        "email1": "ukigoni@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 99,
+        "owner_name": "BISCEGLIA, TOMAS - Rosario",
+        "phone": "11 6462 0201 (Rosario, esposa)",
+        "email1": "tomasbisceglia@hotmail.com",
+        "email2": "rochidarnet@hotmail.com"
+    },
+    {
+        "lot_number": 100,
+        "owner_name": "MAYORGA , LUIS",
+        "phone": null,
+        "email1": "luismmayorga@gmail.com",
+        "email2": "paulacurutchet@hotmail.com"
+    },
+    {
+        "lot_number": 101,
+        "owner_name": "COSENTINO , CANGIANO",
+        "phone": null,
+        "email1": "jjcosentino@gmail.com",
+        "email2": "alejandrapaz1704@gmail.com"
+    },
+    {
+        "lot_number": 102,
+        "owner_name": "DUHART, ENRIQUE",
+        "phone": null,
+        "email1": "fernanduhart@yahoo.com.ar",
+        "email2": "inesmariaduhart@gmail.com"
+    },
+    {
+        "lot_number": 103,
+        "owner_name": "ABRAM , LUJAN HORACIO MARIA",
+        "phone": null,
+        "email1": "hal@henisa.com",
+        "email2": "tallerdecoghlan@gmail.com"
+    },
+    {
+        "lot_number": 104,
+        "owner_name": "MOYANO , PAULO",
+        "phone": null,
+        "email1": "paulo.moyano@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 105,
+        "owner_name": "RODRIGUEZ WALTER",
+        "phone": null,
+        "email1": "walter.rodriguez@viajobien.com",
+        "email2": "accueilan@yahoo.com.ar"
+    },
+    {
+        "lot_number": 106,
+        "owner_name": "DIAZ, JOSE G.",
+        "phone": null,
+        "email1": "diaz.jose.gustavo@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 107,
+        "owner_name": "CORREIA, RICARDO",
+        "phone": null,
+        "email1": "mariagriseldatrani@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 108,
+        "owner_name": "BESUSCHIO, ADRIAN",
+        "phone": null,
+        "email1": "acbesuschio@intramed.net",
+        "email2": "bocalanargentina@gmail.com"
+    },
+    {
+        "lot_number": 109,
+        "owner_name": "HERRERA MARIA PAZ",
+        "phone": null,
+        "email1": "paz_herrera@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 110,
+        "owner_name": "SANTOS , ENRIQUE RUBEN",
+        "phone": null,
+        "email1": "enrisanprofdr@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 111,
+        "owner_name": "RICARDO FEDERICO",
+        "phone": null,
+        "email1": "rafederico@cribe.com.ar",
+        "email2": "hfederico@cribe.com.ar"
+    },
+    {
+        "lot_number": 112,
+        "owner_name": "NJM SA",
+        "phone": null,
+        "email1": "rominamammana@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 113,
+        "owner_name": "I.P.S.A",
+        "phone": null,
+        "email1": "lucasmoche@gmail.com",
+        "email2": "florencia@nexuspartners.net"
+    },
+    {
+        "lot_number": 114,
+        "owner_name": "THIAGO ALDAVE",
+        "phone": null,
+        "email1": "stwsrl@gmail.com",
+        "email2": "martindbiancotti@gmail.com"
+    },
+    {
+        "lot_number": 115,
+        "owner_name": "CERVIÑO SANTIAGO",
+        "phone": null,
+        "email1": "santiago.cervino@danone.com",
+        "email2": "santiago.cervino@sumachile.cl"
+    },
+    {
+        "lot_number": 116,
+        "owner_name": "NIGRO , VICENTE",
+        "phone": null,
+        "email1": "vicentenigro1948@yahoo.com.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 117,
+        "owner_name": "COSENTINO , ADRIAN",
+        "phone": null,
+        "email1": "adrian.e.cosentino@gmail.com",
+        "email2": "ricardofrances@hotmail.com"
+    },
+    {
+        "lot_number": 118,
+        "owner_name": "HOY WEST GUILLERMO",
+        "phone": null,
+        "email1": "billyhoy@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 119,
+        "owner_name": "LEONEL EZEQUIEL BUHAY",
+        "phone": null,
+        "email1": "",
+        "email2": ""
+    },
+    {
+        "lot_number": 120,
+        "owner_name": "HIGA, DANIEL",
+        "phone": null,
+        "email1": "danielhiga@hotmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 121,
+        "owner_name": "NUSBAUM , Francine - Juicio Iniciado",
+        "phone": null,
+        "email1": "rolandonusbaum@gmail.com",
+        "email2": "victornusbaum@gmail.com"
+    },
+    {
+        "lot_number": 122,
+        "owner_name": "Bema Cosntrucciones - En Legales",
+        "phone": null,
+        "email1": "veroaa05@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 123,
+        "owner_name": "Bema Cosntrucciones - En Legales",
+        "phone": null,
+        "email1": "",
+        "email2": ""
+    },
+    {
+        "lot_number": 124,
+        "owner_name": "GALARRAGA IÑAQUI",
+        "phone": null,
+        "email1": "Inaki.Galarraga@assistcard.com",
+        "email2": "drpgl09@gmail.com"
+    },
+    {
+        "lot_number": 125,
+        "owner_name": "Sebastián Bracco",
+        "phone": null,
+        "email1": "tatobracco@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 126,
+        "owner_name": "MORERO , MARINA",
+        "phone": null,
+        "email1": "marina-morero@hotmail.com",
+        "email2": "averra@juridicauno.com"
+    },
+    {
+        "lot_number": 127,
+        "owner_name": "PIDRE GABRIEL",
+        "phone": null,
+        "email1": "gpidre@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 128,
+        "owner_name": "FERNANDEZ, PABLO MARIANO",
+        "phone": null,
+        "email1": "pamfer75@yahoo.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 129,
+        "owner_name": "NOTRICA, Paula - MOURELOS, Gabriel",
+        "phone": null,
+        "email1": "gmourelos@tamaba.edu.ar",
+        "email2": ""
+    },
+    {
+        "lot_number": 130,
+        "owner_name": "TRANI , ALEJANDRO",
+        "phone": null,
+        "email1": "aletrani@gmail.com",
+        "email2": ""
+    },
+    {
+        "lot_number": 131,
+        "owner_name": "FERREYRA VERONICA",
+        "phone": null,
+        "email1": "dkoliesnik@hotmail.com",
+        "email2": ""
+    }
+]
