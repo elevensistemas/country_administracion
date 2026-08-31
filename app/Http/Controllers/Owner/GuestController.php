@@ -23,7 +23,7 @@ class GuestController extends Controller
             session(['active_lot_id' => $activeLotId]);
         }
 
-        $guests = [];
+        $guests = GuestAuthorization::whereNull('id')->paginate(10);
         if ($activeLot) {
             $guests = GuestAuthorization::where('lot_id', $activeLot->id)
                 ->orderBy('created_at', 'desc')
@@ -64,9 +64,9 @@ class GuestController extends Controller
             'type' => 'required|string|in:individual,frequent,list',
             'name' => 'required_if:type,individual,frequent|string|max:255|nullable',
             'last_name' => 'required_if:type,individual,frequent|string|max:255|nullable',
-            'dni' => 'nullable|string|max:20',
+            'dni' => 'required_if:type,individual,frequent|string|max:20|nullable',
             'license_plate' => 'nullable|string|max:20',
-            'visit_date' => 'nullable|date|after_or_equal:today',
+            'visit_date' => 'required|date|after_or_equal:today',
             'visit_time' => 'nullable',
             'notes' => 'nullable|string',
             'guest_names_list' => 'required_if:type,list|string|nullable'
