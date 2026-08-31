@@ -37,8 +37,8 @@ self.addEventListener('activate', event => {
 
 // Fetch Event with network fallback
 self.addEventListener('fetch', event => {
-  // Only cache GET requests and avoid caching admin paths
-  if (event.request.method !== 'GET' || event.request.url.includes('/admin')) {
+  // Only cache GET requests, avoid caching admin paths, and never cache navigation/page requests
+  if (event.request.method !== 'GET' || event.request.url.includes('/admin') || event.request.mode === 'navigate') {
     return;
   }
 
