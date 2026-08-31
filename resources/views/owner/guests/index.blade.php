@@ -40,13 +40,13 @@
 
                 <div class="my-2 border-top border-ios pt-2" style="font-size: 0.85rem; line-height: 1.4;">
                     @if($guest->dni)
-                        <div class="mb-1"><span class="text-muted">DNI:</span> <strong class="text-dark">{{ $guest->dni }}</strong></div>
+                        <div class="mb-1"><span class="text-muted">DNI:</span> <strong>{{ $guest->dni }}</strong></div>
                     @endif
                     @if($guest->license_plate)
-                        <div class="mb-1"><span class="text-muted">Patente Auto:</span> <strong class="text-dark">{{ $guest->license_plate }}</strong></div>
+                        <div class="mb-1"><span class="text-muted">Patente Auto:</span> <strong>{{ $guest->license_plate }}</strong></div>
                     @endif
                     @if($guest->visit_date)
-                        <div class="mb-1"><span class="text-muted">Fecha Visita:</span> <strong class="text-dark">{{ $guest->visit_date->format('d/m/Y') }}</strong></div>
+                        <div class="mb-1"><span class="text-muted">Fecha Visita:</span> <strong>{{ $guest->visit_date->format('d/m/Y') }}</strong></div>
                     @endif
                     @if($guest->type === 'list' && $guest->notes)
                         <div class="bg-body-secondary p-2 rounded-3 mt-1 text-muted" style="font-size: 0.8rem; white-space: pre-wrap;">
