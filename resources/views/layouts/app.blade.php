@@ -516,6 +516,26 @@
                         </div>
                     </ul>
                 </div>
+
+                <!-- User Profile / Logout Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-ios rounded-circle p-0 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px; overflow: hidden; border: 1px solid var(--bs-border-color);">
+                        <div class="avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center w-100 h-100" style="font-weight: 600; font-size: 0.9rem;">
+                            {{ substr(Auth::user()->name, 0, 1) }}{{ substr(Auth::user()->last_name, 0, 1) }}
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 p-2 mt-2" style="font-size: 0.85rem; min-width: 180px;">
+                        <li><span class="dropdown-item-text fw-bold text-success">{{ Auth::user()->full_name }}</span></li>
+                        <li><span class="dropdown-item-text text-muted" style="font-size: 0.75rem; padding-top: 0; padding-bottom: 0;">{{ ucfirst(Auth::user()->relationship_type) }}</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-danger rounded-3"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
