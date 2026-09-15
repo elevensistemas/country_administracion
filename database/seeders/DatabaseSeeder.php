@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
             RealLotsAndOwnersSeeder::class,
             SuppliersSeeder::class,
             SupplierInvoicesSeeder::class,
+            CommonAreasSeeder::class,
+            BillingPeriodsSeeder::class,
+            GuestAuthorizationsSeeder::class,
         ]);
     }
 }

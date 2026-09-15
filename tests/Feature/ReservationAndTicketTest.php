@@ -253,12 +253,14 @@ class ReservationAndTicketTest extends TestCase
             'balance' => 0.00,
         ]);
 
-        $period = BillingPeriod::create([
-            'period' => '2026-09',
-            'start_date' => '2026-09-01',
-            'end_date' => '2026-09-30',
-            'status' => 'draft',
-        ]);
+        $period = BillingPeriod::firstOrCreate(
+            ['period' => '2026-09'],
+            [
+                'start_date' => '2026-09-01',
+                'end_date' => '2026-09-30',
+                'status' => 'draft',
+            ]
+        );
 
         // Create import record
         $import = Import::create([
