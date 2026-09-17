@@ -487,12 +487,6 @@
                     {{ \Carbon\Carbon::now()->isoFormat('dddd D [de] MMMM, Y') }}
                 </span>
 
-                <!-- Manual Button -->
-                <a href="{{ route('manual') }}" target="_blank" class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center gap-1 shadow-sm" title="Abrir Manual de Usuario">
-                    <i class="bi bi-book-fill"></i>
-                    <span class="d-none d-sm-inline fw-semibold">Manual</span>
-                </a>
-
                 <!-- Notification Bell Dropdown -->
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary position-relative btn-ios rounded-circle p-2 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
