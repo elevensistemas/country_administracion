@@ -30,6 +30,10 @@ Route::get('/__migrate', function (Request $request) {
         Artisan::call('optimize:clear');
     } elseif ($action === 'storage_link') {
         Artisan::call('storage:link');
+    } elseif ($action === 'git_pull') {
+        $output = shell_exec('git pull origin main 2>&1');
+        Artisan::call('optimize:clear');
+        return response('<pre>' . ($output ?: 'No output') . "\n" . Artisan::output() . '</pre>', 200);
     } else {
         Artisan::call('migrate', ['--force' => true]);
     }
