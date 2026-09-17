@@ -13,8 +13,12 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $news = News::where('is_published', true)
-            ->orderBy('publish_date', 'desc')
+        $news = News::where(function ($q) {
+                $q->where('is_published', true)
+                  ->orWhere('status', 'published');
+            })
+            ->where('visibility', '!=', 'internal')
+            ->orderByRaw('COALESCE(published_at, publish_date, created_at) DESC')
             ->paginate(10);
 
         return view('owner.news.index', compact('news'));
@@ -25,8 +29,12 @@ class NewsController extends Controller
      */
     public function show(News $news)
     {
-        if (!$news->is_published) {
+        if (!$news->is_published && $news->status !== 'published') {
             abort(403, 'No tienes permiso para ver esta novedad.');
+        }
+
+        if ($news->visibility === 'internal') {
+            abort(403, 'Esta novedad es de visibilidad interna.');
         }
 
         return view('owner.news.show', compact('news'));

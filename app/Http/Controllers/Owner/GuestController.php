@@ -72,25 +72,33 @@ class GuestController extends Controller
             'guest_names_list' => 'required_if:type,list|string|nullable'
         ]);
 
+        $uuid = (string) Str::uuid();
+        $visitDate = $request->visit_date ?: now()->toDateString();
+        $validFrom = $request->visit_time ? "{$visitDate} {$request->visit_time}" : "{$visitDate} 00:00:00";
+        $validUntil = "{$visitDate} 23:59:59";
+
         $data = [
+            'uuid' => $uuid,
             'lot_id' => $activeLot->id,
             'user_id' => $user->id,
             'type' => $request->type,
             'status' => 'active',
-            'qr_code' => 'RANITA-' . strtoupper(Str::random(12))
+            'valid_from' => $validFrom,
+            'valid_until' => $validUntil,
+            'qr_code' => $uuid
         ];
 
         if ($request->type === 'list') {
             $data['name'] = 'Lista de Invitados';
             $data['last_name'] = '';
             $data['notes'] = $request->guest_names_list;
-            $data['visit_date'] = $request->visit_date ?: now()->toDateString();
+            $data['visit_date'] = $visitDate;
         } else {
             $data['name'] = $request->name;
             $data['last_name'] = $request->last_name;
             $data['dni'] = $request->dni;
             $data['license_plate'] = $request->license_plate;
-            $data['visit_date'] = $request->visit_date;
+            $data['visit_date'] = $visitDate;
             $data['visit_time'] = $request->visit_time;
             $data['notes'] = $request->notes;
         }
@@ -110,7 +118,11 @@ class GuestController extends Controller
             abort(403, 'No tienes permiso para realizar esta acción.');
         }
 
-        $guest->delete();
+        // Logical cancellation for robust security synchronization
+        $guest->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+        ]);
 
         return redirect()->route('owner.guests.index')->with('success', 'Autorización cancelada con éxito.');
     }

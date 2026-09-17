@@ -11,12 +11,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if (file_exists(dirname($this->app->basePath()) . '/index.php')) {
+            $this->app->usePublicPath(dirname($this->app->basePath()));
+        }
     }
 
     public function boot(): void
     {
         \Illuminate\Pagination\Paginator::useBootstrapFive();
+
+        // Rate Limiter for security device sync
+        \Illuminate\Support\Facades\RateLimiter::for('security-device', function (\Illuminate\Http\Request $request) {
+            $token = $request->bearerToken() ?: $request->ip();
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(60)->by($token);
+        });
 
         // Load dynamic mail config from database
         try {
@@ -38,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
             // Safe fallback
         }
 
-        view()->composer('layouts.app', function ($view) {
+        view()->composer(['layouts.app', 'layouts.owner'], function ($view) {
             if (auth()->check()) {
                 $unreadNotificationsCount = \App\Models\Notification::where('user_id', auth()->id())
                     ->whereNull('read_at')

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.owner')
 
 @section('title', 'Novedades')
 @section('page_title', 'Novedades y Anuncios')

@@ -5,6 +5,20 @@
 @section('content')
 <h4 class="fw-bold text-center mb-4">Iniciar Sesión</h4>
 
+@if(session('warning'))
+    <div class="alert alert-warning border-0 rounded-3 py-2 mb-3 d-flex align-items-center gap-2" style="font-size: 0.88rem;">
+        <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+        <span>{{ session('warning') }}</span>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger border-0 rounded-3 py-2 mb-3 d-flex align-items-center gap-2" style="font-size: 0.88rem;">
+        <i class="bi bi-x-circle-fill flex-shrink-0"></i>
+        <span>{{ session('error') }}</span>
+    </div>
+@endif
+
 @if(session('status'))
     <div class="alert alert-success border-0 rounded-3 py-2 mb-3" style="font-size: 0.9rem;">
         {{ session('status') }}
@@ -17,7 +31,7 @@
     </div>
 @endif
 
-<form method="POST" action="{{ route('login') }}">
+<form method="POST" action="{{ route('login') }}" id="loginForm">
     @csrf
 
     <!-- Email Address -->
@@ -62,12 +76,20 @@
     </div>
 </form>
 
-<div class="mt-4 text-center">
-    <small class="text-muted">Acceso administrativo predeterminado:</small>
-    <div class="bg-body-secondary p-2 rounded-3 mt-1" style="font-size: 0.75rem;">
-        <code>superadmin@laranita.com</code> / <code>password</code><br>
-        <code>admin1@laranita.com</code> / <code>password</code><br>
-        <code>contabilidad@laranita.com</code> / <code>password</code>
-    </div>
-</div>
+<script>
+    // Refresh CSRF Token if returning to the tab after idle
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            fetch("{{ route('ping-session') }}")
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.csrf_token) {
+                        const tokenInput = document.querySelector('input[name="_token"]');
+                        if (tokenInput) tokenInput.value = data.csrf_token;
+                    }
+                })
+                .catch(() => {});
+        }
+    });
+</script>
 @endsection

@@ -80,19 +80,34 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', 'Lote no seleccionado.');
         }
 
-        $unit = $activeLot->functionalUnits()->first();
+        if ($request->filled('functional_unit_id')) {
+            $unit = $activeLot->functionalUnits()->where('id', $request->functional_unit_id)->first();
+            if (!$unit) {
+                return redirect()->back()->with('error', 'La unidad funcional seleccionada no pertenece al lote activo.');
+            }
+        } else {
+            $unit = $activeLot->functionalUnits()->first();
+        }
+
         if (!$unit) {
             return redirect()->back()->with('error', 'La unidad funcional no está configurada.');
         }
         
-        // Find owner profile associated to this user email/phone
-        $owner = Owner::where('email', $user->email)->first();
+        // Find owner profile associated to this user email, DNI or unit owner
+        $owner = Owner::where('email', $user->email)->first()
+            ?: ($user->dni ? Owner::where('dni', $user->dni)->first() : null)
+            ?: $unit->owners()->first()
+            ?: $activeLot->owners()->first();
+
+        if (!$owner) {
+            return redirect()->back()->with('error', 'No se encontró una ficha de propietario vinculada a tu cuenta para registrar el comprobante. Por favor contacta a administración.');
+        }
 
         DB::transaction(function () use ($request, $user, $unit, $owner) {
             $payment = Payment::create([
                 'functional_unit_id' => $unit->id,
                 'lot_id' => $unit->lot_id,
-                'owner_id' => $owner ? $owner->id : 1,
+                'owner_id' => $owner->id,
                 'user_id' => $user->id,
                 'amount' => $request->amount,
                 'payment_date' => $request->payment_date,

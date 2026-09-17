@@ -50,7 +50,7 @@ class DocumentController extends Controller
             'document_category_id' => 'required|exists:document_categories,id',
             'description' => 'nullable|string',
             'is_public' => 'required|boolean',
-            'file' => 'required|file|max:10240', // 10MB limit
+            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,webp|max:10240', // 10MB limit
         ]);
 
         DB::transaction(function () use ($request) {
@@ -89,7 +89,7 @@ class DocumentController extends Controller
     public function storeVersion(Request $request, Document $document)
     {
         $request->validate([
-            'file' => 'required|file|max:10240',
+            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,webp|max:10240',
             'change_log' => 'required|string|max:255',
         ]);
 

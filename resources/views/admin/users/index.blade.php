@@ -126,6 +126,11 @@
                                     </button>
                                 </form>
 
+                                <!-- Change Password -->
+                                <button type="button" class="btn btn-sm btn-ios btn-ios-secondary text-warning" title="Cambiar Contraseña" onclick="openPasswordModal({{ $user->id }}, '{{ addslashes($user->full_name) }}')">
+                                    <i class="bi bi-key-fill"></i>
+                                </button>
+
                                 <!-- Edit -->
                                 <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-ios btn-ios-secondary text-primary" title="Editar">
                                     <i class="bi bi-pencil-fill"></i>
@@ -209,6 +214,10 @@
                         </form>
                     @endif
 
+                    <button type="button" class="btn btn-sm btn-ios btn-ios-secondary text-warning px-2 py-2" title="Cambiar Contraseña" onclick="openPasswordModal({{ $user->id }}, '{{ addslashes($user->full_name) }}')">
+                        <i class="bi bi-key-fill me-1"></i> Clave
+                    </button>
+
                     <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-sm btn-ios btn-ios-secondary {{ $user->status === 'active' ? 'text-danger' : 'text-success' }} px-2 py-2">
@@ -249,4 +258,74 @@
         {{ $users->links() }}
     </div>
 </div>
+
+<!-- Modal Cambiar Contraseña -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-bottom border-ios">
+                <h5 class="modal-title fw-bold" id="changePasswordModalLabel">
+                    <i class="bi bi-key-fill text-warning me-2"></i>Cambiar Contraseña
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form id="changePasswordForm" method="POST" action="">
+                @csrf
+                <div class="modal-body p-4">
+                    <p class="text-muted mb-3" style="font-size: 0.9rem;">
+                        Modificando la contraseña para: <strong class="text-dark" id="modalUserName"></strong>
+                    </p>
+
+                    <div class="mb-3">
+                        <label for="modalPassword" class="form-label fw-semibold" style="font-size: 0.85rem;">Nueva Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" name="password" id="modalPassword" class="form-control form-control-ios" required minlength="6" placeholder="Mínimo 6 caracteres">
+                            <button class="btn btn-outline-secondary btn-ios" type="button" onclick="togglePassVisibility('modalPassword', this)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modalPasswordConfirm" class="form-label fw-semibold" style="font-size: 0.85rem;">Confirmar Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" name="password_confirmation" id="modalPasswordConfirm" class="form-control form-control-ios" required minlength="6" placeholder="Repite la contraseña">
+                            <button class="btn btn-outline-secondary btn-ios" type="button" onclick="togglePassVisibility('modalPasswordConfirm', this)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-ios">
+                    <button type="button" class="btn btn-ios btn-ios-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-ios btn-ios-primary"><i class="bi bi-check-circle-fill me-1"></i> Guardar Contraseña</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openPasswordModal(userId, userName) {
+    const form = document.getElementById('changePasswordForm');
+    form.action = `/admin/users/${userId}/password`;
+    document.getElementById('modalUserName').innerText = userName;
+    document.getElementById('modalPassword').value = '';
+    document.getElementById('modalPasswordConfirm').value = '';
+    const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+    modal.show();
+}
+
+function togglePassVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+}
+</script>
 @endsection

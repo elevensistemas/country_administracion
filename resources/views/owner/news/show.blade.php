@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.owner')
 
 @section('title', $news->title)
 @section('page_title', 'Comunicado Oficial')

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Traits\Auditable;
 
 class Reservation extends Model
 {
+    use Auditable;
     protected $fillable = [
         'common_area_id', 'lot_id', 'user_id', 'reservation_date', 
         'start_time', 'end_time', 'price', 'charge_to_expenses', 

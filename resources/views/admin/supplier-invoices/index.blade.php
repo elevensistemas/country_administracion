@@ -144,7 +144,7 @@
                                         Vencimiento: {{ $invoice->due_date->format('d/m/Y') }}
                                     </span>
                                     @php
-                                        $days = Carbon::today()->diffInDays($invoice->due_date, false);
+                                        $days = (int) now()->startOfDay()->diffInDays($invoice->due_date, false);
                                     @endphp
                                     @if($days < 0)
                                         <small class="text-danger fw-bold" style="font-size: 0.75rem;">Vencida hace {{ abs($days) }} días</small>
@@ -215,7 +215,7 @@
                             <div>
                                 <strong>Vencimiento:</strong> {{ $invoice->due_date->format('d/m/Y') }}
                                 @php
-                                    $days = Carbon::today()->diffInDays($invoice->due_date, false);
+                                    $days = (int) now()->startOfDay()->diffInDays($invoice->due_date, false);
                                 @endphp
                                 @if($days < 0)
                                     <span class="text-danger fw-bold ms-1">(Hace {{ abs($days) }} días)</span>

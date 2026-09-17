@@ -12,7 +12,14 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Favicon & Mobile Touch Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#198754">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="La Ranita Admin">
     
     <style>
         :root {
@@ -391,6 +398,9 @@
                     <a href="{{ route('admin.settings.index') }}" class="ios-nav-link {{ Route::is('admin.settings.*') ? 'active' : '' }}">
                         <i class="bi bi-gear-fill"></i> Configuración
                     </a>
+                    <a href="{{ route('manual') }}" target="_blank" class="ios-nav-link text-success">
+                        <i class="bi bi-book-fill"></i> Manual del Sistema
+                    </a>
                 @else
                     <!-- OWNER / RESIDENT MENU -->
                     <small class="text-uppercase text-muted fw-bold px-4 py-2 d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Mi Portal</small>
@@ -420,6 +430,9 @@
                     </a>
                     <a href="{{ route('owner.profile.show') }}" class="ios-nav-link {{ Route::is('owner.profile.show') ? 'active' : '' }}">
                         <i class="bi bi-person-fill"></i> Mi Perfil
+                    </a>
+                    <a href="{{ route('manual') }}" target="_blank" class="ios-nav-link text-success">
+                        <i class="bi bi-book-fill"></i> Manual de Usuario
                     </a>
                 @endif
             </div>
@@ -472,6 +485,12 @@
                     {{ \Carbon\Carbon::now()->isoFormat('dddd D [de] MMMM, Y') }}
                 </span>
 
+                <!-- Manual Button -->
+                <a href="{{ route('manual') }}" target="_blank" class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center gap-1 shadow-sm" title="Abrir Manual de Usuario">
+                    <i class="bi bi-book-fill"></i>
+                    <span class="d-none d-sm-inline fw-semibold">Manual</span>
+                </a>
+
                 <!-- Notification Bell Dropdown -->
                 <div class="dropdown">
                     <button class="btn btn-outline-secondary position-relative btn-ios rounded-circle p-2 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
@@ -486,7 +505,7 @@
                         <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom border-ios">
                             <span class="fw-bold text-success">Notificaciones</span>
                             @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
-                                <form action="{{ route('admin.notifications.read-all') }}" method="POST" class="m-0">
+                                <form action="{{ route('notifications.read-all') }}" method="POST" class="m-0">
                                     @csrf
                                     <button type="submit" class="btn btn-link text-success p-0 m-0 text-decoration-none fw-semibold" style="font-size: 0.75rem;">Marcar todo leído</button>
                                 </form>
@@ -496,12 +515,28 @@
                         <div class="py-1" style="max-height: 280px; overflow-y: auto;">
                             @if(isset($unreadNotifications) && $unreadNotifications->isNotEmpty())
                                 @foreach($unreadNotifications as $notif)
+                                    @php
+                                        $notifIcon = match($notif->type ?? '') {
+                                            'ticket' => 'bi bi-chat-left-dots-fill text-warning',
+                                            'reservation' => 'bi bi-calendar-check-fill text-info',
+                                            'news', 'communication' => 'bi bi-megaphone-fill text-primary',
+                                            'payment' => 'bi bi-cash-stack text-success',
+                                            default => 'bi bi-bell-fill text-success',
+                                        };
+                                        $notifBg = match($notif->type ?? '') {
+                                            'ticket' => 'bg-warning-subtle',
+                                            'reservation' => 'bg-info-subtle',
+                                            'news', 'communication' => 'bg-primary-subtle',
+                                            'payment' => 'bg-success-subtle',
+                                            default => 'bg-success-subtle',
+                                        };
+                                    @endphp
                                     <a class="dropdown-item p-3 border-bottom border-ios rounded-3 d-flex align-items-start gap-2" href="{{ $notif->link ?? '#' }}" onclick="markAsRead(event, {{ $notif->id }}, '{{ $notif->link ?? '#' }}')">
-                                        <div class="bg-success-subtle text-success rounded-circle p-1.5 d-flex align-items-center justify-content-center mt-0.5">
-                                            <i class="bi bi-calendar-check-fill" style="font-size: 0.85rem;"></i>
+                                        <div class="{{ $notifBg }} rounded-circle p-1.5 d-flex align-items-center justify-content-center mt-0.5" style="width: 32px; height: 32px; flex-shrink: 0;">
+                                            <i class="{{ $notifIcon }}" style="font-size: 0.85rem;"></i>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <strong class="text-dark d-block" style="font-size: 0.82rem;">{{ $notif->title }}</strong>
+                                            <strong class="text-body d-block" style="font-size: 0.82rem;">{{ $notif->title }}</strong>
                                             <span class="text-muted d-block text-wrap" style="font-size: 0.78rem; line-height: 1.3;">{{ $notif->message }}</span>
                                             <small class="text-muted d-block mt-1 font-monospace" style="font-size: 0.7rem;">{{ $notif->created_at->diffForHumans() }}</small>
                                         </div>
@@ -632,7 +667,7 @@
 
         function markAsRead(e, id, link) {
             e.preventDefault();
-            fetch(`/admin/notifications/${id}/read`, {
+            fetch(`/notifications/${id}/read`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -646,6 +681,69 @@
                 window.location.href = link;
             });
         }
+
+        // Session Activity & Inactivity Keep-Alive / Auto-Redirect
+        (function() {
+            let lastActivityTime = Date.now();
+            const INACTIVITY_TIMEOUT_MS = 60 * 60 * 1000; // 60 min for admin
+            const PING_INTERVAL_MS = 10 * 60 * 1000; // 10 min
+
+            function recordActivity() {
+                lastActivityTime = Date.now();
+            }
+
+            ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
+                window.addEventListener(evt, recordActivity, { passive: true });
+            });
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    checkSessionHealth();
+                }
+            });
+
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted) {
+                    checkSessionHealth();
+                }
+            });
+
+            function checkSessionHealth() {
+                const timeInactive = Date.now() - lastActivityTime;
+                if (timeInactive > INACTIVITY_TIMEOUT_MS) {
+                    window.location.href = "{{ route('login') }}";
+                    return;
+                }
+
+                fetch("{{ route('ping-session') }}", {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => {
+                    if (res.status === 401 || res.status === 419) {
+                        window.location.href = "{{ route('login') }}";
+                        return null;
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && data.authenticated === false) {
+                        window.location.href = "{{ route('login') }}";
+                    }
+                })
+                .catch(() => {});
+            }
+
+            setInterval(function() {
+                if (document.visibilityState === 'visible') {
+                    const timeInactive = Date.now() - lastActivityTime;
+                    if (timeInactive < INACTIVITY_TIMEOUT_MS) {
+                        fetch("{{ route('ping-session') }}").catch(() => {});
+                    } else {
+                        window.location.href = "{{ route('login') }}";
+                    }
+                }
+            }, PING_INTERVAL_MS);
+        })();
     </script>
     @yield('scripts')
 </body>

@@ -22,3 +22,13 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+*.sql
+*.doc
+*.docx
+credenciales*
+security-agent/config.json
+*.sqlite
+database/*.sqlite
+auditoria*.txt
+security-agent/
+

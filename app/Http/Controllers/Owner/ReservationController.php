@@ -112,26 +112,68 @@ class ReservationController extends Controller
 
         $commonArea = CommonArea::findOrFail($request->common_area_id);
 
-        $startTime = trim($request->start_time) . ':00';
-        $endTime = trim($request->end_time) . ':00';
+        $startTime = trim($request->start_time);
+        $endTime = trim($request->end_time);
 
-        if ($startTime >= $endTime) {
-            return redirect()->back()->with('error', 'La hora de inicio debe ser anterior a la de fin.')->withInput();
+        if (strlen($startTime) === 5) $startTime .= ':00';
+        if (strlen($endTime) === 5) $endTime .= ':00';
+
+        $allowedStart = $commonArea->schedule_start;
+        if (strlen($allowedStart) === 5) $allowedStart .= ':00';
+        $allowedEnd = $commonArea->schedule_end;
+        if (strlen($allowedEnd) === 5) $allowedEnd .= ':00';
+
+        $isOvernight = ($allowedEnd < $allowedStart); // e.g. 08:00:00 to 02:00:00
+
+        $isValid = false;
+
+        if (!$isOvernight) {
+            // Standard daytime schedule (e.g. 08:00 to 23:00)
+            if ($startTime < $endTime && $startTime >= $allowedStart && $endTime <= $allowedEnd) {
+                $isValid = true;
+            }
+        } else {
+            // Overnight schedule (e.g. 08:00 to 02:00 next day)
+            // Valid scenarios:
+            // 1. Starts today >= 08:00 and ends today > startTime
+            // 2. Starts today >= 08:00 and ends next day <= 02:00 (e.g. 21:00 to 02:00)
+            // 3. Starts next morning <= 02:00 and ends <= 02:00 with endTime > startTime
+            if ($startTime >= $allowedStart) {
+                if ($endTime > $startTime || $endTime <= $allowedEnd) {
+                    $isValid = true;
+                }
+            } elseif ($startTime <= $allowedEnd) {
+                if ($endTime <= $allowedEnd && $endTime > $startTime) {
+                    $isValid = true;
+                }
+            }
         }
 
-        // Check range bounds matching common area schedules
-        $allowedStart = $commonArea->schedule_start;
-        $allowedEnd = $commonArea->schedule_end;
-        if ($startTime < $allowedStart || $endTime > $allowedEnd) {
-            return redirect()->back()->with('error', "El horario seleccionado debe estar dentro del rango permitido del espacio (" . substr($allowedStart, 0, 5) . " hs a " . substr($allowedEnd, 0, 5) . " hs).")->withInput();
+        if (!$isValid) {
+            $formattedStart = substr($allowedStart, 0, 5);
+            $formattedEnd = substr($allowedEnd, 0, 5);
+            $extra = $isOvernight ? ' (trasnoche / madrugada)' : '';
+            return redirect()->back()
+                ->with('error', "El horario seleccionado ({$request->start_time} a {$request->end_time}) no es válido para este espacio ({$formattedStart} hs a {$formattedEnd} hs{$extra}).")
+                ->withInput();
         }
 
         // Check if overlaps with existing bookings
         $collision = Reservation::where('common_area_id', $commonArea->id)
             ->where('reservation_date', $request->reservation_date)
             ->whereIn('status', ['confirmed', 'pending'])
-            ->where('start_time', '<', $endTime)
-            ->where('end_time', '>', $startTime)
+            ->where(function($q) use ($startTime, $endTime) {
+                if ($startTime < $endTime) {
+                    $q->where('start_time', '<', $endTime)
+                      ->where('end_time', '>', $startTime);
+                } else {
+                    $q->where(function($sub) use ($startTime) {
+                        $sub->where('end_time', '>', $startTime);
+                    })->orWhere(function($sub) use ($endTime) {
+                        $sub->where('start_time', '<', $endTime);
+                    });
+                }
+            })
             ->exists();
 
         if ($collision) {

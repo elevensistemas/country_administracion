@@ -78,14 +78,19 @@ class PasswordController extends Controller
     }
 
     /**
-     * Handle recovery email request (simulated for simplicity/stability).
+     * Handle recovery email request with real token generation and dispatch.
      */
     public function sendResetLinkEmail(Request $request)
     {
         $request->validate(['email' => 'required|email']);
         
-        // Logically we'd send email here. Let's just flash success and redirect back.
-        return back()->with('status', 'Hemos enviado un correo para restablecer tu contraseña. (Simulado)');
+        $status = \Illuminate\Support\Facades\Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === \Illuminate\Support\Facades\Password::RESET_LINK_SENT
+            ? back()->with('status', 'Hemos enviado un correo con el enlace para restablecer tu contraseña.')
+            : back()->withErrors(['email' => 'No pudimos encontrar un usuario con ese correo electrónico o no fue posible enviar el correo.']);
     }
 
     /**
@@ -97,7 +102,7 @@ class PasswordController extends Controller
     }
 
     /**
-     * Handle reset password request.
+     * Handle reset password request with real token verification.
      */
     public function reset(Request $request)
     {
@@ -105,16 +110,26 @@ class PasswordController extends Controller
             'token' => 'required',
             'email' => 'required|email',
             'password' => ['required', 'confirmed', Password::min(8)],
+        ], [
+            'token.required' => 'El token de recuperación es inválido.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
         ]);
 
-        // Simulated password reset
-        $user = \App\Models\User::where('email', $request->email)->first();
-        if ($user) {
-            $user->password = Hash::make($request->password);
-            $user->save();
-            return redirect()->route('login')->with('success', 'Contraseña restablecida con éxito.');
-        }
+        $status = \Illuminate\Support\Facades\Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, string $password) {
+                $user->password = Hash::make($password);
+                $user->setRememberToken(\Illuminate\Support\Str::random(60));
+                $user->save();
 
-        return back()->withErrors(['email' => 'No pudimos encontrar un usuario con ese correo electrónico.']);
+                event(new \Illuminate\Auth\Events\PasswordReset($user));
+            }
+        );
+
+        return $status === \Illuminate\Support\Facades\Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('success', 'Contraseña restablecida con éxito. Por favor inicia sesión con tu nueva contraseña.')
+            : back()->withErrors(['email' => 'El enlace de recuperación es inválido o ha expirado. Por favor solicita uno nuevo.']);
     }
 }

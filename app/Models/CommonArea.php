@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Auditable;
 
 class CommonArea extends Model
 {
+    use Auditable;
     protected $fillable = [
         'name', 'description', 'capacity', 'is_active', 
         'price', 'requires_approval', 'rules', 'schedule_start', 

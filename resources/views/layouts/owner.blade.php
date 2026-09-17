@@ -13,11 +13,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- PWA Manifest support -->
+    <!-- Favicon & Mobile Touch Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#198754">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="apple-touch-icon" href="{{ asset('img/logo-192.png') }}">
+    <meta name="apple-mobile-web-app-title" content="Mi Ranita">
 
     <style>
         :root {
@@ -209,6 +212,67 @@
                 </span>
             @endif
 
+            <!-- Notification Bell Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary position-relative border-0 rounded-circle p-1 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 34px; height: 34px;">
+                    <i class="bi bi-bell-fill text-success" style="font-size: 1.1rem;"></i>
+                    @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-white" style="font-size: 0.6rem; padding: 0.25em 0.45em;">
+                            {{ $unreadNotificationsCount }}
+                        </span>
+                    @endif
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-4 p-2 mt-2" style="width: 300px; font-size: 0.85rem;">
+                    <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom border-ios">
+                        <span class="fw-bold text-success">Notificaciones</span>
+                        @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
+                            <form action="{{ route('notifications.read-all') }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" class="btn btn-link text-success p-0 m-0 text-decoration-none fw-semibold" style="font-size: 0.75rem;">Marcar todo leído</button>
+                            </form>
+                        @endif
+                    </div>
+                    
+                    <div class="py-1" style="max-height: 280px; overflow-y: auto;">
+                        @if(isset($unreadNotifications) && $unreadNotifications->isNotEmpty())
+                            @foreach($unreadNotifications as $notif)
+                                @php
+                                    $notifIcon = match($notif->type ?? '') {
+                                        'ticket' => 'bi bi-chat-left-dots-fill text-warning',
+                                        'reservation' => 'bi bi-calendar-check-fill text-info',
+                                        'news', 'communication' => 'bi bi-megaphone-fill text-primary',
+                                        'payment' => 'bi bi-cash-stack text-success',
+                                        default => 'bi bi-bell-fill text-success',
+                                    };
+                                    $notifBg = match($notif->type ?? '') {
+                                        'ticket' => 'bg-warning-subtle',
+                                        'reservation' => 'bg-info-subtle',
+                                        'news', 'communication' => 'bg-primary-subtle',
+                                        'payment' => 'bg-success-subtle',
+                                        default => 'bg-success-subtle',
+                                    };
+                                @endphp
+                                <a class="dropdown-item p-2 border-bottom border-ios rounded-3 d-flex align-items-start gap-2" href="{{ $notif->link ?? '#' }}" onclick="markAsRead(event, {{ $notif->id }}, '{{ $notif->link ?? '#' }}')">
+                                    <div class="{{ $notifBg }} rounded-circle p-1 d-flex align-items-center justify-content-center mt-1" style="width: 28px; height: 28px; flex-shrink: 0;">
+                                        <i class="{{ $notifIcon }}" style="font-size: 0.8rem;"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <strong class="text-body d-block" style="font-size: 0.82rem;">{{ $notif->title }}</strong>
+                                        <span class="text-muted d-block text-wrap" style="font-size: 0.75rem; line-height: 1.3;">{{ $notif->message }}</span>
+                                        <small class="text-muted d-block mt-1 font-monospace" style="font-size: 0.68rem;">{{ $notif->created_at->diffForHumans() }}</small>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @else
+                            <div class="text-center py-3 text-muted">
+                                <i class="bi bi-bell-slash fs-4 d-block mb-1 opacity-50"></i>
+                                <span style="font-size: 0.8rem;">No tienes nuevas notificaciones</span>
+                            </div>
+                        @endif
+                    </div>
+                </ul>
+            </div>
+
             <!-- Profile / Logout dropdown -->
             <div class="dropdown">
                 <div class="avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; font-weight: 600; font-size: 0.85rem; cursor: pointer;" data-bs-toggle="dropdown">
@@ -340,6 +404,24 @@
             setTheme(preferred);
         });
 
+        // Mark notification as read
+        function markAsRead(event, id, link) {
+            event.preventDefault();
+            fetch(`/notifications/${id}/read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            }).finally(() => {
+                if (link && link !== '#') {
+                    window.location.href = link;
+                } else {
+                    window.location.reload();
+                }
+            });
+        }
+
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -348,6 +430,70 @@
                     .catch(err => console.error('Service Worker registration failed:', err));
             });
         }
+
+        // Session Activity & Inactivity Keep-Alive / Auto-Redirect
+        (function() {
+            let lastActivityTime = Date.now();
+            const INACTIVITY_TIMEOUT_MS = 45 * 60 * 1000; // 45 min
+            const PING_INTERVAL_MS = 10 * 60 * 1000; // 10 min
+
+            function recordActivity() {
+                lastActivityTime = Date.now();
+            }
+
+            ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
+                window.addEventListener(evt, recordActivity, { passive: true });
+            });
+
+            // When user returns to tab/app after phone was locked or app in background
+            document.addEventListener('visibilitychange', function() {
+                if (document.visibilityState === 'visible') {
+                    checkSessionHealth();
+                }
+            });
+
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted) {
+                    checkSessionHealth();
+                }
+            });
+
+            function checkSessionHealth() {
+                const timeInactive = Date.now() - lastActivityTime;
+                if (timeInactive > INACTIVITY_TIMEOUT_MS) {
+                    window.location.href = "{{ route('login') }}";
+                    return;
+                }
+
+                fetch("{{ route('ping-session') }}", {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => {
+                    if (res.status === 401 || res.status === 419) {
+                        window.location.href = "{{ route('login') }}";
+                        return null;
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && data.authenticated === false) {
+                        window.location.href = "{{ route('login') }}";
+                    }
+                })
+                .catch(() => {});
+            }
+
+            setInterval(function() {
+                if (document.visibilityState === 'visible') {
+                    const timeInactive = Date.now() - lastActivityTime;
+                    if (timeInactive < INACTIVITY_TIMEOUT_MS) {
+                        fetch("{{ route('ping-session') }}").catch(() => {});
+                    } else {
+                        window.location.href = "{{ route('login') }}";
+                    }
+                }
+            }, PING_INTERVAL_MS);
+        })();
     </script>
     @yield('scripts')
 </body>

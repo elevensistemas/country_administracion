@@ -13,9 +13,11 @@ use App\Models\Lot;
 use App\Models\LotHistoryEvent;
 use App\Models\LotHistoryEventType;
 use App\Models\LotHistoryCategory;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class TicketController extends Controller
 {
@@ -78,15 +80,17 @@ class TicketController extends Controller
         $request->validate([
             'status' => 'required|string|in:open,in_progress,resolved,closed',
             'assignee_id' => 'nullable|exists:users,id',
+            'assigned_to' => 'nullable|exists:users,id',
         ]);
 
         $oldStatus = $ticket->status;
-        $oldAssignee = $ticket->assignee_id;
+        $assignedTo = $request->assigned_to ?? $request->assignee_id;
+        $oldAssignee = $ticket->assigned_to;
 
-        DB::transaction(function () use ($request, $ticket, $oldStatus, $oldAssignee) {
+        DB::transaction(function () use ($request, $ticket, $oldStatus, $oldAssignee, $assignedTo) {
             $ticket->update([
                 'status' => $request->status,
-                'assignee_id' => $request->assignee_id,
+                'assigned_to' => $assignedTo,
             ]);
 
             // If status changed to resolved or closed, log it in Lot History
@@ -110,6 +114,36 @@ class TicketController extends Controller
                     'visibility' => 'public',
                 ]);
             }
+
+            // Notify owner on status change
+            if ($oldStatus !== $request->status && $ticket->user_id && $ticket->user_id !== auth()->id()) {
+                $statusLabel = match($request->status) {
+                    'open' => 'Abierto',
+                    'in_progress' => 'En Proceso',
+                    'resolved' => 'Resuelto',
+                    'closed' => 'Cerrado',
+                    default => $request->status,
+                };
+
+                Notification::create([
+                    'user_id' => $ticket->user_id,
+                    'title' => "Reclamo #{$ticket->id} Actualizado",
+                    'message' => "El estado de tu reclamo ha cambiado a: {$statusLabel}",
+                    'type' => 'ticket',
+                    'link' => route('owner.tickets.show', $ticket->id),
+                ]);
+            }
+
+            // Notify operator if newly assigned
+            if ($assignedTo && $assignedTo !== $oldAssignee && $assignedTo !== auth()->id()) {
+                Notification::create([
+                    'user_id' => $assignedTo,
+                    'title' => "Reclamo Asignado #{$ticket->id}",
+                    'message' => "Se te asignó el reclamo: \"" . Str::limit($ticket->title, 40) . "\"",
+                    'type' => 'ticket',
+                    'link' => route('admin.tickets.show', $ticket->id),
+                ]);
+            }
         });
 
         return back()->with('success', 'Ticket actualizado correctamente.');
@@ -130,7 +164,7 @@ class TicketController extends Controller
                 'ticket_id' => $ticket->id,
                 'user_id' => auth()->id(),
                 'message' => $request->message,
-                'is_internal' => false,
+                'is_admin' => true,
             ]);
 
             // Save attachment if exists
@@ -143,16 +177,33 @@ class TicketController extends Controller
                     'ticket_message_id' => $msg->id,
                     'file_path' => $path,
                     'file_name' => $file->getClientOriginalName(),
-                    'file_size' => $file->getSize(),
-                    'mime_type' => $file->getClientMimeType(),
                 ]);
             }
 
             // Update ticket timestamp
             $ticket->touch();
+
+            // Notify resident / owner user
+            if ($ticket->user_id && $ticket->user_id !== auth()->id()) {
+                Notification::create([
+                    'user_id' => $ticket->user_id,
+                    'title' => "Respuesta en Reclamo #{$ticket->id}",
+                    'message' => "Administración respondió a tu reclamo: \"" . Str::limit($request->message, 45) . "\"",
+                    'type' => 'ticket',
+                    'link' => route('owner.tickets.show', $ticket->id),
+                ]);
+            }
         });
 
         return back()->with('success', 'Respuesta enviada al propietario.');
+    }
+
+    /**
+     * Alias for reply.
+     */
+    public function storeMessage(Request $request, Ticket $ticket)
+    {
+        return $this->reply($request, $ticket);
     }
 
     /**
@@ -231,8 +282,6 @@ class TicketController extends Controller
                     'ticket_id' => $ticket->id,
                     'file_path' => $path,
                     'file_name' => $file->getClientOriginalName(),
-                    'file_size' => $file->getSize(),
-                    'mime_type' => $file->getClientMimeType(),
                 ]);
             }
 
@@ -261,6 +310,17 @@ class TicketController extends Controller
                 'event_date' => now(),
                 'visibility' => 'public',
             ]);
+
+            // Notify user if created for a resident
+            if ($ticket->user_id && $ticket->user_id !== auth()->id()) {
+                Notification::create([
+                    'user_id' => $ticket->user_id,
+                    'title' => "Nuevo Reclamo Registrado #{$ticket->id}",
+                    'message' => "Administración registró un reclamo para tu lote: \"" . Str::limit($ticket->title, 45) . "\"",
+                    'type' => 'ticket',
+                    'link' => route('owner.tickets.show', $ticket->id),
+                ]);
+            }
 
             return $ticket;
         });

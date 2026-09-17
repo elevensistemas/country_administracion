@@ -383,8 +383,10 @@ class ReconciliationService
             $unit->balance += $payment->amount;
             $unit->save();
 
-            $lot->balance = $unit->balance;
-            $lot->save();
+            if ($lot) {
+                $lot->balance = $lot->functionalUnits()->sum('balance');
+                $lot->save();
+            }
 
             AccountMovement::create([
                 'functional_unit_id' => $unit->id,

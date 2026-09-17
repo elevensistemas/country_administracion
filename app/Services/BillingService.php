@@ -123,10 +123,12 @@ class BillingService
                 $unit->balance += ($baseCapital + $baseReserve);
                 $unit->save();
 
-                // Update Lot balance too
+                // Update Lot balance too (sum of all units in this lot)
                 $lot = $unit->lot;
-                $lot->balance = $unit->balance;
-                $lot->save();
+                if ($lot) {
+                    $lot->balance = $lot->functionalUnits()->sum('balance');
+                    $lot->save();
+                }
 
                 AccountMovement::create([
                     'functional_unit_id' => $unit->id,
@@ -356,8 +358,10 @@ class BillingService
         $unit->balance -= $paymentAmount;
         $unit->save();
 
-        $lot->balance = $unit->balance;
-        $lot->save();
+        if ($lot) {
+            $lot->balance = $lot->functionalUnits()->sum('balance');
+            $lot->save();
+        }
     }
 
     /**

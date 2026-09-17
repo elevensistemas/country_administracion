@@ -47,8 +47,8 @@ class AdminUsersSeeder extends Seeder
         $admin1 = User::where('email', 'admin1@laranita.com')->first();
         if (!$admin1) {
             $admin1 = User::create([
-                'name' => 'María Marta',
-                'last_name' => 'Fernández',
+                'name' => 'Administración',
+                'last_name' => '1',
                 'email' => 'admin1@laranita.com',
                 'phone' => '+5491144445555',
                 'dni' => '22333444',
@@ -70,8 +70,8 @@ class AdminUsersSeeder extends Seeder
         $admin2 = User::where('email', 'admin2@laranita.com')->first();
         if (!$admin2) {
             $admin2 = User::create([
-                'name' => 'Juan Carlos',
-                'last_name' => 'Pérez',
+                'name' => 'Administración',
+                'last_name' => '2',
                 'email' => 'admin2@laranita.com',
                 'phone' => '+5491155556666',
                 'dni' => '33444555',
@@ -93,8 +93,8 @@ class AdminUsersSeeder extends Seeder
         $accounting = User::where('email', 'contabilidad@laranita.com')->first();
         if (!$accounting) {
             $accounting = User::create([
-                'name' => 'Esteban',
-                'last_name' => 'Gómez',
+                'name' => 'Contabilidad',
+                'last_name' => 'General',
                 'email' => 'contabilidad@laranita.com',
                 'phone' => '+5491166667777',
                 'dni' => '44555666',
@@ -116,8 +116,8 @@ class AdminUsersSeeder extends Seeder
         $operator1 = User::where('email', 'operador1@laranita.com')->first();
         if (!$operator1) {
             $operator1 = User::create([
-                'name' => 'Ramiro',
-                'last_name' => 'López',
+                'name' => 'Operador',
+                'last_name' => '1',
                 'email' => 'operador1@laranita.com',
                 'phone' => '+5491177778888',
                 'dni' => '55666777',

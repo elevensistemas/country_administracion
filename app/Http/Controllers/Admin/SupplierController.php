@@ -50,7 +50,7 @@ class SupplierController extends Controller
     {
         $request->validate([
             'business_name' => 'required|string|max:255',
-            'cuit' => 'required|string|regex:/^\d{2}-\d{8}-\d{1}$|^\d{11}$/|unique:suppliers,cuit',
+            'cuit' => ['required', 'string', 'regex:/^(\d{2}-\d{8}-\d{1}|\d{11})$/', 'unique:suppliers,cuit'],
             'category' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',
@@ -100,7 +100,7 @@ class SupplierController extends Controller
     {
         $request->validate([
             'business_name' => 'required|string|max:255',
-            'cuit' => 'required|string|regex:/^\d{2}-\d{8}-\d{1}$|^\d{11}$/|unique:suppliers,cuit,' . $supplier->id,
+            'cuit' => ['required', 'string', 'regex:/^(\d{2}-\d{8}-\d{1}|\d{11})$/', 'unique:suppliers,cuit,' . $supplier->id],
             'category' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',

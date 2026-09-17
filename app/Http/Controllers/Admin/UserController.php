@@ -213,4 +213,23 @@ class UserController extends Controller
 
         return back()->with('success', "Enlace de invitación reenviado a {$user->email}. (Simulado)");
     }
+
+    /**
+     * Update user password from admin.
+     */
+    public function updatePassword(Request $request, User $user)
+    {
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'password.required' => 'Debes ingresar una contraseña.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+        ]);
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return back()->with('success', "La contraseña del usuario {$user->full_name} ha sido actualizada exitosamente.");
+    }
 }

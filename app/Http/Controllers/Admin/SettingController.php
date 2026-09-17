@@ -37,7 +37,7 @@ class SettingController extends Controller
             'mail_host' => 'required|string',
             'mail_port' => 'required|integer',
             'mail_username' => 'required|string',
-            'mail_password' => 'required|string',
+            'mail_password' => 'nullable|string',
             'mail_encryption' => 'nullable|string',
             'mail_from_address' => 'required|email',
             'mail_from_name' => 'required|string',
@@ -45,7 +45,7 @@ class SettingController extends Controller
             // WhatsApp
             'provider' => 'required|string',
             'api_url' => 'required|url',
-            'api_token' => 'required|string',
+            'api_token' => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -59,15 +59,23 @@ class SettingController extends Controller
 
             // Update Email settings
             $email = EmailSetting::first() ?? new EmailSetting();
-            $email->fill($request->only([
-                'mail_host', 'mail_port', 'mail_username', 'mail_password', 
+            $emailData = $request->only([
+                'mail_host', 'mail_port', 'mail_username', 
                 'mail_encryption', 'mail_from_address', 'mail_from_name'
-            ]));
+            ]);
+            if ($request->filled('mail_password')) {
+                $emailData['mail_password'] = $request->mail_password;
+            }
+            $email->fill($emailData);
             $email->save();
 
             // Update WhatsApp settings
             $whatsapp = WhatsAppSetting::first() ?? new WhatsAppSetting();
-            $whatsapp->fill($request->only(['provider', 'api_url', 'api_token']));
+            $whatsappData = $request->only(['provider', 'api_url']);
+            if ($request->filled('api_token')) {
+                $whatsappData['api_token'] = $request->api_token;
+            }
+            $whatsapp->fill($whatsappData);
             $whatsapp->save();
         });
 

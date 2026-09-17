@@ -1,10 +1,10 @@
-const CACHE_NAME = 'miranita-v1';
+const CACHE_NAME = 'laranita-pwa-v2';
 const ASSETS_TO_CACHE = [
-  '/owner',
-  '/css/app.css',
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
   'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
-  'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap'
+  'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap',
+  '/favicon.png',
+  '/apple-touch-icon.png'
 ];
 
 // Install Event
@@ -58,8 +58,7 @@ self.addEventListener('fetch', event => {
         }
         return response;
       }).catch(() => {
-        // Fallback for offline API request
-        return caches.match('/owner');
+        return new Response('Sin conexión', { status: 503, statusText: 'Offline' });
       });
     })
   );

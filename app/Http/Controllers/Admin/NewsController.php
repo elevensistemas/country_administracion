@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\News;
+use App\Models\User;
+use App\Models\Notification;
+use App\Mail\NewsPublishedMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class NewsController extends Controller
 {
@@ -54,16 +59,32 @@ class NewsController extends Controller
             'published_at' => 'nullable|date',
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['notify_portal', 'send_email']);
         $data['user_id'] = auth()->id();
+        $data['is_published'] = ($request->status === 'published');
         
-        if ($request->status === 'published' && !$request->filled('published_at')) {
-            $data['published_at'] = now();
+        if ($request->status === 'published') {
+            $data['published_at'] = $request->filled('published_at') ? $request->published_at : now();
+            $data['publish_date'] = $data['published_at'];
         }
 
-        News::create($data);
+        $news = News::create($data);
 
-        return redirect()->route('admin.news.index')->with('success', 'Novedad creada correctamente.');
+        // Notify owners/residents if published
+        if ($news->status === 'published' && $news->visibility === 'public') {
+            $this->notifyOwners(
+                $news,
+                $request->boolean('notify_portal', true),
+                $request->boolean('send_email', true)
+            );
+        }
+
+        $msg = 'Novedad creada correctamente.';
+        if ($news->status === 'published' && $request->boolean('send_email', true)) {
+            $msg .= ' Se enviaron las notificaciones por portal y correo electrónico a los propietarios.';
+        }
+
+        return redirect()->route('admin.news.index')->with('success', $msg);
     }
 
     /**
@@ -88,13 +109,30 @@ class NewsController extends Controller
             'published_at' => 'nullable|date',
         ]);
 
-        $data = $request->all();
+        $wasPublished = ($news->status === 'published');
+
+        $data = $request->except(['notify_portal', 'send_email']);
+        $data['is_published'] = ($request->status === 'published');
         
-        if ($request->status === 'published' && !$news->published_at) {
-            $data['published_at'] = now();
+        if ($request->status === 'published') {
+            if (!$news->published_at) {
+                $data['published_at'] = $request->filled('published_at') ? $request->published_at : now();
+                $data['publish_date'] = $data['published_at'];
+            }
         }
 
         $news->update($data);
+
+        // Send notifications if newly published or explicitly requested
+        if ($news->status === 'published' && $news->visibility === 'public') {
+            if (!$wasPublished || $request->boolean('send_email') || $request->boolean('notify_portal')) {
+                $this->notifyOwners(
+                    $news,
+                    $request->boolean('notify_portal', false),
+                    $request->boolean('send_email', false)
+                );
+            }
+        }
 
         return redirect()->route('admin.news.index')->with('success', 'Novedad actualizada correctamente.');
     }
@@ -106,5 +144,47 @@ class NewsController extends Controller
     {
         $news->delete();
         return redirect()->route('admin.news.index')->with('success', 'Novedad eliminada correctamente.');
+    }
+
+    /**
+     * Helper to dispatch in-app notifications and emails to owners/residents.
+     */
+    private function notifyOwners(News $news, bool $notifyPortal, bool $sendEmail): void
+    {
+        if (!$notifyPortal && !$sendEmail) {
+            return;
+        }
+
+        // Target all owner, tenant, and board users
+        $recipients = User::where(function ($q) {
+                $q->whereIn('relationship_type', ['owner', 'tenant', 'board'])
+                  ->orWhereHas('roles', function ($rq) {
+                      $rq->whereIn('name', ['owner', 'tenant', 'board']);
+                  });
+            })
+            ->where('status', 'active')
+            ->get();
+
+        foreach ($recipients as $user) {
+            // 1. In-App Notification (Campanita)
+            if ($notifyPortal) {
+                Notification::create([
+                    'user_id' => $user->id,
+                    'title' => 'Nueva Novedad: ' . $news->title,
+                    'message' => Str::limit($news->summary ?: strip_tags($news->content), 120),
+                    'type' => 'news',
+                    'link' => route('owner.news.show', $news->id),
+                ]);
+            }
+
+            // 2. Email Notification
+            if ($sendEmail && !empty($user->email)) {
+                try {
+                    Mail::to($user->email)->send(new NewsPublishedMail($news, $user));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning("No se pudo enviar email de novedad a {$user->email}: " . $e->getMessage());
+                }
+            }
+        }
     }
 }

@@ -66,6 +66,28 @@
                 </div>
             </div>
 
+            <!-- Notification Options -->
+            <div class="ios-card">
+                <h5 class="fw-bold mb-3"><i class="bi bi-bell-fill text-success me-2"></i>Re-notificar a Propietarios</h5>
+                <p class="text-muted mb-3" style="font-size: 0.85rem;">Si realizaste cambios importantes y deseas enviar nuevamente un aviso a los propietarios:</p>
+                
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" name="notify_portal" id="notify_portal" value="1">
+                    <label class="form-check-label fw-semibold" for="notify_portal" style="font-size: 0.9rem;">
+                        <i class="bi bi-app-indicator text-success me-1"></i> Re-enviar aviso a la campanita del Portal
+                    </label>
+                    <small class="text-muted d-block ms-1" style="font-size: 0.8rem;">Vuelve a colocar una alerta en el panel de todos los vecinos.</small>
+                </div>
+
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="send_email" id="send_email" value="1">
+                    <label class="form-check-label fw-semibold" for="send_email" style="font-size: 0.9rem;">
+                        <i class="bi bi-envelope-check-fill text-success me-1"></i> Re-enviar por Correo Electrónico
+                    </label>
+                    <small class="text-muted d-block ms-1" style="font-size: 0.8rem;">Envía la versión actualizada por email a todos los propietarios.</small>
+                </div>
+            </div>
+
             <!-- Actions -->
             <div class="d-flex justify-content-between align-items-center mb-5">
                 <a href="{{ route('admin.news.index') }}" class="btn btn-ios btn-ios-secondary"><i class="bi bi-arrow-left me-2"></i>Volver</a>

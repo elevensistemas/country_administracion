@@ -21,6 +21,7 @@ class TicketCategoriesSeeder extends Seeder
             'pets' => 'Mascotas',
             'documents' => 'Documentación',
             'suggestions' => 'Sugerencias',
+            'other' => 'Otro',
         ];
 
         foreach ($ticketCats as $name => $displayName) {

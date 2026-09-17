@@ -85,8 +85,6 @@ class TicketController extends Controller
                     'ticket_id' => $ticket->id,
                     'file_path' => $path,
                     'file_name' => $file->getClientOriginalName(),
-                    'file_size' => $file->getSize(),
-                    'mime_type' => $file->getClientMimeType(),
                 ]);
             }
 
@@ -110,6 +108,21 @@ class TicketController extends Controller
                 'event_date' => now(),
                 'visibility' => 'public',
             ]);
+
+            // Notify all admin and operator staff via bell notification
+            $staffUsers = \App\Models\User::whereIn('relationship_type', ['admin', 'superadmin', 'operator', 'accounting'])->get();
+            $lotNumber = $lot ? $lot->number : $ticket->lot_id;
+            $catName = $ticket->category ? $ticket->category->display_name : 'Reclamo';
+
+            foreach ($staffUsers as $staff) {
+                \App\Models\Notification::create([
+                    'user_id' => $staff->id,
+                    'title' => "Nuevo Reclamo - Lote {$lotNumber}",
+                    'message' => "{$user->full_name} ({$catName}): \"" . \Illuminate\Support\Str::limit($ticket->title, 45) . "\"",
+                    'type' => 'ticket',
+                    'link' => route('admin.tickets.show', $ticket->id),
+                ]);
+            }
         });
 
         return redirect()->route('owner.tickets.index')->with('success', 'Tu ticket ha sido creado correctamente y un operador se pondrá en contacto a la brevedad.');
@@ -150,7 +163,7 @@ class TicketController extends Controller
                 'ticket_id' => $ticket->id,
                 'user_id' => $user->id,
                 'message' => $request->message,
-                'is_internal' => false,
+                'is_admin' => false,
             ]);
 
             // Save attachment if exists
@@ -163,12 +176,28 @@ class TicketController extends Controller
                     'ticket_message_id' => $msg->id,
                     'file_path' => $path,
                     'file_name' => $file->getClientOriginalName(),
-                    'file_size' => $file->getSize(),
-                    'mime_type' => $file->getClientMimeType(),
                 ]);
             }
 
             $ticket->touch();
+
+            // Notify staff members of the new response
+            $staffToNotify = $ticket->assigned_to 
+                ? \App\Models\User::where('id', $ticket->assigned_to)->get() 
+                : \App\Models\User::whereIn('relationship_type', ['admin', 'superadmin', 'operator'])->get();
+
+            $lot = $ticket->lot;
+            $lotNumber = $lot ? $lot->number : $ticket->lot_id;
+
+            foreach ($staffToNotify as $staff) {
+                \App\Models\Notification::create([
+                    'user_id' => $staff->id,
+                    'title' => "Mensaje en Reclamo #{$ticket->id} (Lote {$lotNumber})",
+                    'message' => "{$user->full_name}: \"" . \Illuminate\Support\Str::limit($request->message, 45) . "\"",
+                    'type' => 'ticket',
+                    'link' => route('admin.tickets.show', $ticket->id),
+                ]);
+            }
         });
 
         return back()->with('success', 'Mensaje enviado correctamente.');

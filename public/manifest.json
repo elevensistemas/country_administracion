@@ -4,19 +4,26 @@
   "description": "Portal Oficial de Propietarios y Residentes de Country La Ranita",
   "start_url": "/owner",
   "display": "standalone",
-  "background_color": "#f2f2f7",
-  "theme_color": "#34c759",
+  "background_color": "#ffffff",
+  "theme_color": "#198754",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "img/logo-192.png",
+      "src": "/img/logo-192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
-      "src": "img/logo-512.png",
+      "src": "/img/logo-512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180"
     }
   ]
 }

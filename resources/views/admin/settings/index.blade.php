@@ -53,8 +53,8 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label for="mail_password" class="form-label fw-semibold" style="font-size: 0.85rem;">Contraseña</label>
-                        <input type="password" name="mail_password" id="mail_password" class="form-control form-control-ios" value="{{ old('mail_password', $email->mail_password ?? 'secret_smtp_password') }}" required>
+                        <label for="mail_password" class="form-label fw-semibold" style="font-size: 0.85rem;">Contraseña SMTP</label>
+                        <input type="password" name="mail_password" id="mail_password" class="form-control form-control-ios" placeholder="{{ !empty($email->mail_password) ? '•••••••••••• (sin cambios)' : 'Ingresa contraseña SMTP' }}">
                     </div>
 
                     <div class="col-md-4">
@@ -101,7 +101,7 @@
 
                             <div class="col-12">
                                 <label for="api_token" class="form-label fw-semibold" style="font-size: 0.85rem;">Token de Autenticación / API Key</label>
-                                <input type="password" name="api_token" id="api_token" class="form-control form-control-ios" value="{{ old('api_token', $whatsapp->api_token ?? 'secret_api_key_token') }}" required>
+                                <input type="password" name="api_token" id="api_token" class="form-control form-control-ios" placeholder="{{ !empty($whatsapp->api_token) ? '•••••••••••• (sin cambios)' : 'Ingresa el Token / API Key' }}">
                             </div>
                         </div>
                     </div>

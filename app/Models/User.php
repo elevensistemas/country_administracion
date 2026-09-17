@@ -12,11 +12,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Auditable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes, Auditable;
+
+    protected $auditExcluded = [
+        'last_login_at',
+        'last_login_ip',
+        'last_login_agent',
+        'login_count',
+        'remember_token',
+    ];
 
     /**
      * The attributes that are mass assignable.

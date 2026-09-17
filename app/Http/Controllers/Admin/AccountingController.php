@@ -87,10 +87,10 @@ class AccountingController extends Controller
             }
             $functionalUnit->save();
 
-            // Sync Lot balance too
-            $lot = $functionalUnit->lot;
-            $lot->balance = $functionalUnit->balance;
-            $lot->save();
+            if ($lot) {
+                $lot->balance = $lot->functionalUnits()->sum('balance');
+                $lot->save();
+            }
 
             // Create Movement record
             $movement = AccountMovement::create([

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Auditable;
 
 class Document extends Model
 {
+    use Auditable;
     protected $fillable = ['category_id', 'name', 'description', 'visibility', 'is_archived'];
 
     public function category(): BelongsTo

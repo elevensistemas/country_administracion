@@ -5,25 +5,98 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\UserPreferenceController;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+
 // Redirect root to login
 Route::get('/', function () {
     return redirect()->route('login');
+});
+
+// Secure Maintenance & Migration Route for Shared Hosting
+Route::get('/__migrate', function (Request $request) {
+    $key = $request->input('key');
+    $expectedKey = env('MAINTENANCE_KEY', config('app.maintenance_key', 'Trinitotolueno2015'));
+
+    if (empty($expectedKey) || $key !== $expectedKey) {
+        abort(403, 'Forbidden');
+    }
+
+    $action = $request->input('action', 'migrate');
+
+    if ($action === 'migrate') {
+        Artisan::call('migrate', ['--force' => true]);
+    } elseif ($action === 'clear') {
+        Artisan::call('optimize:clear');
+    } elseif ($action === 'storage_link') {
+        Artisan::call('storage:link');
+    } else {
+        Artisan::call('migrate', ['--force' => true]);
+    }
+
+    return response('<pre>' . Artisan::output() . '</pre>', 200);
+});
+
+// Secure Seeder Route for Shared Hosting
+Route::get('/__seed', function (Request $request) {
+    $key = $request->input('key');
+    $expectedKey = env('MAINTENANCE_KEY', config('app.maintenance_key', 'Trinitotolueno2015'));
+
+    if (empty($expectedKey) || $key !== $expectedKey) {
+        abort(403, 'Forbidden');
+    }
+
+    $class = $request->input('class');
+    $params = ['--force' => true];
+    if ($class) {
+        $params['--class'] = $class;
+    }
+
+    Artisan::call('db:seed', $params);
+
+    return response('<pre>' . Artisan::output() . '</pre>', 200);
 });
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/ping-session', function () {
+    return response()->json([
+        'authenticated' => auth()->check(),
+        'user_id' => auth()->id(),
+        'csrf_token' => csrf_token(),
+    ]);
+})->name('ping-session');
 
 Route::get('/forgot-password', [PasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('/forgot-password', [PasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/reset-password/{token}', [PasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [PasswordController::class, 'reset'])->name('password.update');
 
-// Force Password Change & Terms Acceptance
+// Manual de Usuario Local (HTML / PDF)
+Route::get('/manual', function () {
+    return view('manual.index');
+})->name('manual');
+
+// Force Password Change & Terms Acceptance & Notifications
 Route::middleware(['auth'])->group(function () {
     Route::get('/password/force-change', [PasswordController::class, 'showForceChangeForm'])->name('password.force_change');
     Route::post('/password/force-change', [PasswordController::class, 'forceChange'])->name('password.force_change.post');
+
+    Route::post('/notifications/{notification}/read', function (\App\Models\Notification $notification) {
+        if ($notification->user_id === auth()->id()) {
+            $notification->update(['read_at' => now()]);
+        }
+        return response()->json(['success' => true]);
+    })->name('notifications.read');
+
+    Route::post('/notifications/read-all', function () {
+        \App\Models\Notification::where('user_id', auth()->id())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+        return back()->with('success', 'Todas las notificaciones marcadas como leídas.');
+    })->name('notifications.read-all');
 });
 
 // User Preferences / Theme toggle (accessible by anyone logged in or not)
@@ -47,6 +120,7 @@ Route::prefix('admin')
         Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
         Route::post('users/{user}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle-status');
         Route::post('users/{user}/resend-invite', [\App\Http\Controllers\Admin\UserController::class, 'resendInvite'])->name('users.resend-invite');
+        Route::post('users/{user}/password', [\App\Http\Controllers\Admin\UserController::class, 'updatePassword'])->name('users.update-password');
 
         // Lots & Functional Units (Lotes y Unidades Funcionales)
         Route::resource('lots', \App\Http\Controllers\Admin\LotController::class);
@@ -90,7 +164,8 @@ Route::prefix('admin')
 
         // Claims / Tickets (Reclamos)
         Route::resource('tickets', \App\Http\Controllers\Admin\TicketController::class);
-        Route::post('tickets/{ticket}/message', [\App\Http\Controllers\Admin\TicketController::class, 'storeMessage'])->name('tickets.message');
+        Route::post('tickets/{ticket}/message', [\App\Http\Controllers\Admin\TicketController::class, 'reply'])->name('tickets.message');
+        Route::post('tickets/{ticket}/reply', [\App\Http\Controllers\Admin\TicketController::class, 'reply'])->name('tickets.reply');
         Route::post('tickets/{ticket}/internal-note', [\App\Http\Controllers\Admin\TicketController::class, 'storeInternalNote'])->name('tickets.internal-note');
 
         // News (Novedades)

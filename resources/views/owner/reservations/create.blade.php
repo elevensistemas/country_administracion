@@ -47,12 +47,24 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="start_time" class="form-label text-muted fw-semibold" style="font-size: 0.8rem;">Hora de Entrada:</label>
-                            <input type="time" name="start_time" id="start_time" class="form-control form-control-ios" required min="{{ substr($commonArea->schedule_start, 0, 5) }}" max="{{ substr($commonArea->schedule_end, 0, 5) }}">
+                            <input type="time" name="start_time" id="start_time" class="form-control form-control-ios" required 
+                                @if($commonArea->schedule_end > $commonArea->schedule_start)
+                                    min="{{ substr($commonArea->schedule_start, 0, 5) }}" max="{{ substr($commonArea->schedule_end, 0, 5) }}"
+                                @endif
+                                value="{{ old('start_time') }}">
                         </div>
                         <div class="col-md-6">
                             <label for="end_time" class="form-label text-muted fw-semibold" style="font-size: 0.8rem;">Hora de Salida:</label>
-                            <input type="time" name="end_time" id="end_time" class="form-control form-control-ios" required min="{{ substr($commonArea->schedule_start, 0, 5) }}" max="{{ substr($commonArea->schedule_end, 0, 5) }}">
+                            <input type="time" name="end_time" id="end_time" class="form-control form-control-ios" required 
+                                @if($commonArea->schedule_end > $commonArea->schedule_start)
+                                    min="{{ substr($commonArea->schedule_start, 0, 5) }}" max="{{ substr($commonArea->schedule_end, 0, 5) }}"
+                                @endif
+                                value="{{ old('end_time') }}">
                         </div>
+                    </div>
+                    <div class="mt-2 text-muted" style="font-size: 0.78rem;">
+                        <i class="bi bi-clock-history me-1 text-success"></i>
+                        Franja horaria permitida: <strong>{{ substr($commonArea->schedule_start, 0, 5) }} hs</strong> a <strong>{{ substr($commonArea->schedule_end, 0, 5) }} hs{{ $commonArea->schedule_end < $commonArea->schedule_start ? ' (trasnoche / madrugada)' : '' }}</strong>
                     </div>
 
                     @if(count($existingBookings) > 0)

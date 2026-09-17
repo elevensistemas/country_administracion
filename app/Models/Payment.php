@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Auditable;
 
 class Payment extends Model
 {
+    use Auditable;
     protected $fillable = [
         'owner_id', 'lot_id', 'functional_unit_id', 'payment_date', 
         'import_date', 'amount', 'bank', 'payment_method', 
