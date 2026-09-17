@@ -1,295 +1,184 @@
-# Manual Integral de Usuario y Administración
+# Manual Oficial de Usuario y Administración
 ## Sistema de Gestión Barrio Cerrado La Ranita Country Club
-
-![Portada del Manual](C:\Users\Alejandro Lo Presti\.gemini\antigravity\brain\e5bd1c76-20c3-4628-841a-300e2dae4192\manual_portada_1789645553441.jpg)
 
 ---
 
 ## 📑 Tabla de Contenidos
-1. [Introducción y Arquitectura del Sistema](#1-introducción-y-arquitectura-del-sistema)
-2. [Acceso, Autenticación y Seguridad](#2-acceso-autenticación-y-seguridad)
-3. [Guía para el Propietario / Residente (Mi Portal)](#3-guía-para-el-propietario--residente-mi-portal)
-   - [3.1 Inicio y Resumen de Cuenta](#31-inicio-y-resumen-de-cuenta)
-   - [3.2 Consulta y Descarga de Expensas](#32-consulta-y-descarga-de-expensas)
-   - [3.3 Cuenta Corriente y Movimientos](#33-cuenta-corriente-y-movimientos)
-   - [3.4 Cómo Informar un Pago](#34-cómo-informar-un-pago)
-   - [3.5 Gestión de Reclamos y Soporte](#35-gestión-de-reclamos-y-soporte)
-   - [3.6 Reservas de Espacios Comunes](#36-reservas-de-espacios-comunes)
-   - [3.7 Autorización de Visitas e Invitados](#37-autorización-de-visitas-e-invitados)
-   - [3.8 Documentos y Novedades](#38-documentos-y-novedades)
-4. [Guía para Administradores, Contadores y Operadores](#4-guía-para-administradores-contadores-y-operadores)
-   - [4.1 Dashboard y Métricas Ejecutivas](#41-dashboard-y-métricas-ejecutivas)
-   - [4.2 Gestión de Lotes y Unidades Funcionales](#42-gestión-de-lotes-y-unidades-funcionales)
-   - [4.3 Padrón de Propietarios y Residentes](#43-padrón-de-propietarios-y-residentes)
-   - [4.4 Liquidación y Emisión de Expensas](#44-liquidación-y-emisión-de-expensas)
-   - [4.5 Conciliación de Pagos e Imputación](#45-conciliación-de-pagos-e-imputación)
-   - [4.6 Proveedores y Cuentas a Pagar](#46-proveedores-y-cuentas-a-pagar)
-   - [4.7 Mesa de Ayuda y Gestión de Reclamos](#47-mesa-de-ayuda-y-gestión-de-reclamos)
-   - [4.8 Administración de Espacios Comunes y Reservas](#48-administración-de-espacios-comunes-y-reservas)
-   - [4.9 Comunicaciones y Novedades Institucionales](#49-comunicaciones-y-novedades-institucionales)
-   - [4.10 Importador Masivo de Datos](#410-importador-masivo-de-datos)
-5. [Módulo de Auditoría y Control de Accesos](#5-módulo-de-auditoría-y-control-de-accesos)
-   - [5.1 Bitácora de Modificaciones y Cargas (Audit Logs)](#51-bitácora-de-modificaciones-y-cargas-audit-logs)
-   - [5.2 Registro de Inicios de Sesión (Login Logs)](#52-registro-de-inicios-de-sesión-login-logs)
-6. [Configuración del Sistema y Parámetros Globales](#6-configuración-del-sistema-y-parámetros-globales)
+
+1. [Introducción y Arquitectura](#1-introducción-y-arquitectura)
+   - 1.1 Roles y Permisos en el Sistema
+   - 1.2 Flujo de Acceso, Seguridad y Recuperación de Claves
+2. [Manual del Propietario / Residente (Mi Portal)](#2-manual-del-propietario--residente-mi-portal)
+   - 2.1 Inicio y Resumen de Saldo (`/owner`)
+   - 2.2 Mis Expensas y Descarga de PDF (`/owner/expenses`)
+   - 2.3 Mi Cuenta Corriente (`/owner/accounting`)
+   - 2.4 Informar Pago de Expensas (`/owner/payments/report`)
+   - 2.5 Mis Reclamos / Mesa de Ayuda (`/owner/tickets`)
+   - 2.6 Espacios Comunes y Reservas (`/owner/reservations`)
+   - 2.7 Autorización de Visitas y Pase QR (`/owner/guests`)
+   - 2.8 Novedades y Documentos (`/owner/news`, `/owner/documents`)
+   - 2.9 Mi Propiedad y Perfil (`/owner/property`, `/owner/profile`)
+3. [Manual de Administración y Operaciones](#3-manual-de-administración-y-operaciones)
+   - 3.1 Tablero Principal / Dashboard (`/admin`)
+   - 3.2 Catastro de Lotes y Unidades Funcionales (`/admin/lots`, `/admin/functional-units`)
+   - 3.3 Historial y Seguimientos de Lote (`/admin/history`, `/admin/follow-ups`)
+   - 3.4 Padrón de Propietarios y Usuarios (`/admin/owners`, `/admin/users`)
+   - 3.5 Facturación y Liquidación de Expensas (`/admin/expenses`)
+   - 3.6 Cuentas Corrientes y Ajustes Manuales (`/admin/accounting`)
+   - 3.7 Conciliación y Auto-Conciliación de Pagos (`/admin/payments`)
+   - 3.8 Proveedores y Facturas de Compra (`/admin/suppliers`, `/admin/supplier-invoices`)
+   - 3.9 Mesa de Ayuda / Gestión de Tickets (`/admin/tickets`)
+   - 3.10 Administración de Espacios Comunes y Reservas (`/admin/common-areas`, `/admin/reservations`)
+   - 3.11 Novedades y Comunicados Masivos (`/admin/news`, `/admin/comms`)
+   - 3.12 Repositorio de Documentos (`/admin/documents`)
+   - 3.13 Importador Masivo de Datos (`/admin/imports`)
+   - 3.14 Módulo de Auditoría y Control de Accesos (`/admin/audit`)
+   - 3.15 Reportes y Adopción (`/admin/reports`, `/admin/adoption`)
+   - 3.16 Parámetros Globales, SMTP y WhatsApp (`/admin/settings`)
 
 ---
 
-## 1. Introducción y Arquitectura del Sistema
+## 1. Introducción y Arquitectura
 
-El sistema de **La Ranita Country Club** es una plataforma web integral diseñada para centralizar y optimizar la administración comunitaria, la gestión contable de expensas, el control de accesos y la comunicación directa entre los vecinos y la administración.
+La plataforma web de **La Ranita Administración** centraliza la gestión operativa, contable y administrativa del barrio cerrado.
 
-```mermaid
-graph TD
-    A[Plataforma La Ranita] --> B[Portal de Propietarios / Residentes]
-    A --> C[Panel de Administración y Contabilidad]
-    A --> D[Módulo de Auditoría y Seguridad]
-    
-    B --> B1[Mis Expensas y Pagos]
-    B --> B2[Reclamos y Tickets]
-    B --> B3[Reservas de Espacios]
-    B --> B4[Visitas e Invitados]
-    
-    C --> C1[Catastro de Lotes y Padrón]
-    C --> C2[Liquidación de Expensas]
-    C --> C3[Conciliación Bancaria]
-    C --> C4[Proveedores y Facturas]
-    
-    D --> D1[Historial de Modificaciones]
-    D --> D2[Registro de Inicios de Sesión]
-```
+### 1.1 Roles y Permisos en el Sistema
 
-### Roles y Perfiles del Sistema
-- **Administrador General**: Acceso total a finanzas, configuración, gestión de usuarios, auditoría y catastro.
-- **Operador / Guardia / Mantenimiento**: Gestión operativa de reclamos, reservas, autorización de accesos y comunicaciones.
-- **Contable / Auditor**: Enfoque en liquidación de expensas, conciliación bancaria, proveedores y balances.
-- **Propietario / Residente**: Gestión de su lote, descarga de expensas, informe de pagos, reclamos y reservas de amenidades.
-- **Inquilino / Co-residente**: Acceso a gestiones autorizadas por el propietario de la unidad.
+- **`superadmin` / `admin` (Administrador General):** Acceso integral a todas las funciones financieras, contables, catastrales, configuración de sistema, auditoría y control de usuarios. Destino de inicio: `/admin/dashboard`.
+- **`accounting` (Contable):** Acceso a facturación de expensas, movimientos de cuenta corriente, conciliación de cobranzas, proveedores, facturas de compra y reportes financieros. Destino: `/admin/dashboard`.
+- **`operator` (Operador / Mantenimiento):** Gestión de tickets/reclamos, aprobación de reservas de espacios comunes, publicación de novedades y catastro. Destino: `/admin/dashboard`.
+- **`owner` (Propietario) / `tenant` (Inquilino):** Acceso al portal personal para consultar y descargar expensas en PDF, informar pagos con comprobante, ver el saldo de su cuenta corriente, crear reclamos, reservar amenidades, precargar autorizaciones de visitas y descargar reglamentos. Destino: `/owner/dashboard`.
+
+### 1.2 Flujo de Acceso, Seguridad y Recuperación de Claves
+
+1. **Inicio de Sesión (`/login`):** Se realiza con correo electrónico y contraseña encriptada (BCrypt). El sistema redirige automáticamente al usuario según su rol asignado.
+2. **Protección contra Fuerza Bruta (Rate Limiting):** Tras 5 intentos fallidos consecutivos de contraseña, el sistema bloquea temporalmente el acceso por 60 segundos y registra el evento en la bitácora de seguridad.
+3. **Primer Acceso (`/password/force-change`):** Los usuarios dados de alta por invitación son redirigidos obligatoriamente a definir su clave definitiva y aceptar los términos de uso.
+4. **Recuperación de Clave (`/forgot-password`):** Envía un enlace seguro con token de restablecimiento por correo electrónico.
+5. **Tema Visual:** Permite seleccionar Modo Claro, Modo Oscuro o Automático desde el menú lateral o inferior.
 
 ---
 
-## 2. Acceso, Autenticación y Seguridad
+## 2. Manual del Propietario / Residente (Mi Portal)
 
-### 2.1 Inicio de Sesión
-1. Ingrese a la dirección web del sistema: `https://laranita.tucooperativa.com/login` (o en entorno local `http://localhost/LA%20RANITA%20ADMIN/public/login`).
-2. Introduzca su **Correo Electrónico** registrado y su **Contraseña**.
-3. Haga clic en **Ingresar**.
+### 2.1 Inicio y Resumen de Saldo (`/owner`)
+- **Estado de Cuenta:** Indica el saldo consolidado del lote. Si registra deuda se destaca en rojo junto a la fecha de vencimiento. Si no registra deuda se indica como *Saldo a Favor* o *¡Tu cuenta está al día!*.
+- **Accesos Rápidos:** Botones directos a Expensas, Invitados, Reservas y Reclamos.
+- **Novedades Recientes:** Tarjetas con las últimas noticias y comunicados del country.
 
-> [!IMPORTANT]
-> El sistema redirige automáticamente al usuario según su rol:
-> - Los administradores y contadores ingresan a `/admin/dashboard`.
-> - Los propietarios y residentes ingresan a `/owner/dashboard`.
+### 2.2 Mis Expensas y Descarga de PDF (`/owner/expenses`)
+- **Listado Histórico:** Muestra las liquidaciones emitidas por período mensual (ej. *Octubre 2026*), con montos al 1° y 2° vencimiento y estado de pago (`Pagada`, `Pendiente`, `Vencida`).
+- **Descarga de PDF:** Botón individual para descargar la liquidación oficial de expensas en PDF.
 
-### 2.2 Medidas de Seguridad Automáticas
-- **Protección contra fuerza bruta**: Tras 5 intentos fallidos consecutivos de contraseña, el sistema bloquea temporalmente el acceso por seguridad y registra el evento en la bitácora de seguridad.
-- **Auditoría de Acceso**: Cada intento (exitoso, fallido o bloqueado) queda registrado con dirección IP, fecha, hora, navegador y dispositivo.
+### 2.3 Mi Cuenta Corriente (`/owner/accounting`)
+- **Libro Mayor:** Muestra cada movimiento de la unidad funcional.
+- **Débitos (+):** Cargos de expensas emitidas, intereses por mora o ajustes.
+- **Créditos (-):** Pagos bancarios recibidos y conciliados.
+- **Saldo Evolutivo:** Visualización del saldo tras cada transacción.
 
----
+### 2.4 Informar Pago de Expensas (`/owner/payments/report`)
+Permite al residente declarar un pago efectuado por transferencia o depósito:
+1. **Importe Transferido ($):** Monto exacto abonado.
+2. **Fecha del Pago:** Día de realización de la transacción.
+3. **Medio de Pago:** Transferencia Bancaria, Depósito Bancario u Otro Medio.
+4. **Banco de Destino:** Cuenta receptora del consorcio.
+5. **N° de Comprobante / Referencia:** Código de transacción bancaria.
+6. **Adjunto:** Foto o archivo PDF del comprobante (hasta 5MB).
+7. **Observaciones:** Notas aclaratorias opcionales.
+- *Efecto:* El pago queda registrado en estado `Pendiente`. Al ser aprobado por Administración, el saldo del lote se actualiza automáticamente y el estado cambia a `Conciliado`.
 
-## 3. Guía para el Propietario / Residente (Mi Portal)
+### 2.5 Mis Reclamos / Mesa de Ayuda (`/owner/tickets`)
+- **Nuevo Reclamo (`/owner/tickets/create`):** Selección de Lote, Categoría (Mantenimiento, Seguridad, Administración), Asunto, Prioridad (Baja, Media, Alta), Detalle descriptivo y archivo/foto adjunta.
+- **Hilo de Mensajes:** Permite interactuar con el equipo de administración y recibir actualizaciones de estado (`Abierto`, `En Progreso`, `Resuelto`, `Cerrado`).
 
-![Portal del Propietario](C:\Users\Alejandro Lo Presti\.gemini\antigravity\brain\e5bd1c76-20c3-4628-841a-300e2dae4192\manual_portal_propietario_1789645574473.jpg)
+### 2.6 Espacios Comunes y Reservas (`/owner/reservations`)
+- **Catálogo de Espacios:** Muestra las instalaciones habilitadas por la administración con su capacidad, arancel (o sin costo), duración por turno y reglamento.
+- **Formulario de Reserva:** Selección de fecha, franja horaria, observaciones y aceptación de normas de uso.
+- **Cancelación:** El vecino puede cancelar sus reservas pendientes o futuras desde su panel.
 
-### 3.1 Inicio y Resumen de Cuenta
-Al acceder al portal, el vecino visualiza:
-- **Estado de Cuenta Actual**: Saldo a favor o deuda pendiente consolidada.
-- **Próximo Vencimiento**: Fecha límite y monto de la última expensa emitida.
-- **Botones de Acción Rápida**: "Informar Pago", "Nuevo Reclamo", "Reservar Cancha/SUM".
-- **Últimas Novedades y Avisos Importantes**: Comunicados recientes emitidos por la administración.
+### 2.7 Autorización de Visitas y Pase QR (`/owner/guests`)
+- **Tipos de Autorización:**
+  - `Individual`: Para una persona puntual (Nombre, Apellido, DNI, Patente y Fecha de visita).
+  - `Frecuente`: Para personal o visitas recurrentes.
+  - `Lista`: Para eventos o reuniones sociales con nómina de asistentes en el campo de observaciones.
+- **Pase Digital:** Genera un comprobante con código QR y datos del ingreso que el residente puede compartir con su invitado.
+- **Baja:** Permite revocar o eliminar la autorización en cualquier momento.
+> [!NOTE]
+> Las autorizaciones se almacenan y consultan en la base de datos de administración web. La integración automatizada con el hardware y lectores de la garita de seguridad física se encuentra en desarrollo posterior.
 
----
+### 2.8 Novedades y Documentos (`/owner/news`, `/owner/documents`)
+- **Novedades:** Lectura de comunicados institucionales y novedades con fotos adjuntas.
+- **Documentos:** Descarga de reglamentos, actas de asamblea y estatutos clasificados por categoría.
 
-### 3.2 Consulta y Descarga de Expensas
-**Ruta:** `Menú lateral > Mis Expensas`
-
-1. Se listan todos los períodos de expensas emitidos ordenados cronológicamente.
-2. Cada registro indica:
-   - **Período** (Ej. Octubre 2026).
-   - **Monto 1º Vencimiento** y **2º Vencimiento**.
-   - **Estado** (`Pagada`, `Pendiente`, `Vencida`).
-3. Para ver el detalle o imprimir la liquidación, haga clic en el botón **Descargar PDF** o **Ver Detalle**.
-
----
-
-### 3.3 Cuenta Corriente y Movimientos
-**Ruta:** `Menú lateral > Mi Cuenta Corriente`
-
-Muestra el libro de movimientos de su lote:
-- **Débitos (+)**: Cargas de expensas ordinarias, extraordinarias, recargos por mora o reservas con costo.
-- **Créditos (-)**: Pagos realizados e imputados a su favor.
-- **Saldo Evolutivo**: Balance actualizado en tiempo real.
-
----
-
-### 3.4 Cómo Informar un Pago
-Cuando realiza una transferencia bancaria o depósito, debe informarlo a través del sistema para su rápida acreditación:
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Vecino as Propietario / Residente
-    participant Sistema as Portal Web
-    actor Admin as Administración / Contabilidad
-
-    Vecino->>Sistema: Carga comprobante, fecha, banco, N° op. e importe
-    Sistema-->>Vecino: Genera estado "Pendiente de Conciliación"
-    Admin->>Sistema: Revisa extracto bancario y valida comprobante
-    Admin->>Sistema: Aprueba el pago e imputa a la expensa
-    Sistema-->>Vecino: Notifica aprobación y actualiza saldo a $0.00
-```
-
-#### Pasos para la Carga:
-1. Diríjase a `Informar Pago`.
-2. Complete los campos requeridos:
-   - **Fecha del Pago**: Día en que realizó la transferencia.
-   - **Monto Transferido**: Importe exacto en pesos argentinos.
-   - **Banco / Medio**: Banco de origen o plataforma (Mercado Pago, Galicia, etc.).
-   - **Número de Operación / Transferencia**: Código de transacción que figura en el comprobante.
-   - **Adjunto**: Suba la foto o PDF del comprobante bancario.
-3. Haga clic en **Enviar Informe de Pago**. El estado figurará como `Pendiente` hasta que administración lo valide.
+### 2.9 Mi Propiedad y Perfil (`/owner/property`, `/owner/profile`)
+- **Mi Propiedad:** Consulta de residentes y vehículos empadronados para su lote, con botón para solicitar cambios a la administración.
+- **Mi Perfil:** Actualización de teléfono, correo alternativo, configuración de canales de notificación (Email / WhatsApp) y cambio de contraseña.
 
 ---
 
-### 3.5 Gestión de Reclamos y Soporte
-**Ruta:** `Menú lateral > Mis Reclamos`
+## 3. Manual de Administración y Operaciones
 
-1. Haga clic en **Nuevo Reclamo**.
-2. Seleccione el **Tipo / Categoría** (Ej. *Mantenimiento de Calles, Luminarias, Seguridad, Espacios Verdes, Convivencia*).
-3. Ingrese un **Título descriptivo** y el **Detalle de la situación**.
-4. (Opcional) Adjunte fotografías del inconveniente.
-5. Podrá ver las respuestas del equipo de administración y recibir notificaciones cuando el estado cambie a *En Progreso* o *Resuelto*.
+### 3.1 Tablero Principal / Dashboard (`/admin`)
+- Resumen ejecutivo con métricas de recaudación mensual, deuda global, lotes activos, propietarios y reclamos abiertos.
 
----
+### 3.2 Catastro de Lotes y Unidades Funcionales (`/admin/lots`, `/admin/functional-units`)
+- **Lotes:** Alta y edición de número de lote, código identificador, dirección interna, estado (Baldío, En Construcción, Habitado), propietario titular y saldo.
+- **Unidades Funcionales:** Registro de UFs vinculadas a cada lote con su coeficiente de participación para el prorrateo de gastos.
 
-### 3.6 Reservas de Espacios Comunes
-**Ruta:** `Menú lateral > Espacios Comunes / Reservas`
+### 3.3 Historial y Seguimientos de Lote (`/admin/history`, `/admin/follow-ups`)
+- **Historial General:** Registro de acontecimientos clasificados por lote, categoría y fecha.
+- **Seguimientos:** Tareas operativas pendientes asociadas a un lote con estados de cumplimiento.
 
-1. Seleccione la amenidad deseada (*Cancha de Tenis, Cancha de Pádel, SUM Principal, Quincho*).
-2. Consulte el calendario interactivo con los turnos disponibles en verde.
-3. Seleccione el **Día** y la **Franja Horaria**.
-4. Lea y acepte el reglamento de uso de las instalaciones.
-5. Haga clic en **Confirmar Reserva**. Si la amenidad tiene arancel, se sumará automáticamente a su próxima liquidación de expensas.
+### 3.4 Padrón de Propietarios y Usuarios (`/admin/owners`, `/admin/users`)
+- **Propietarios:** Registro de datos personales y de contacto (DNI, CUIT, Razón Social, teléfonos, correos y canal preferido).
+- **Usuarios:** Creación de cuentas, asignación de roles (`admin`, `operator`, `accounting`, `owner`), activación/desactivación y reseteo de claves.
 
----
+### 3.5 Facturación y Liquidación de Expensas (`/admin/expenses`)
+1. **Crear Período (`/admin/expenses/create-period`):** Mes/Año, 1° y 2° vencimiento, porcentaje de recargo e intereses.
+2. **Generación de Expensas:** Cálculo masivo aplicando los coeficientes de las unidades funcionales sobre los gastos cargados, o mediante **Importación desde planilla Excel/CSV**.
+3. **Publicar y Descargar:** Publicación masiva para impactar en las cuentas corrientes y habilitar la descarga del PDF a los residentes.
 
-### 3.7 Autorización de Visitas e Invitados
-**Ruta:** `Menú lateral > Autorización de Visitas`
+### 3.6 Cuentas Corrientes y Ajustes Manuales (`/admin/accounting`)
+- Visualización de saldos de todas las unidades funcionales.
+- Carga de **Ajustes Contables Manuales** (Débitos por cargos extraordinarios / Créditos por bonificaciones) con motivo documentado.
 
-- Permite precargar los datos de familiares, amigos o personal de obra/servicio que ingresará a su lote.
-- Ingrese Nombre, Apellido, DNI y Fecha/Rango de validez.
-- La guardia de seguridad podrá validar el ingreso inmediatamente en garita sin necesidad de llamadas telefónicas demorosas.
+### 3.7 Conciliación y Auto-Conciliación de Pagos (`/admin/payments`)
+- **Indicadores en tiempo real:** Pagos pendientes, conciliados del día, en revisión y sin identificar.
+- **Auto-Conciliación:** Algoritmo que cruza automáticamente pagos pendientes con expensas adeudadas por coincidencia de monto y fecha.
+- **Conciliación Manual:** Visualización del comprobante bancario, N° de operación y asignación a deuda.
+- **Acciones:** Conciliar / Aprobar, Marcar en Revisión, Rechazar (con motivo) y **Revertir Pago** (genera contra-asiento contable automático).
 
----
+### 3.8 Proveedores y Facturas de Compra (`/admin/suppliers`, `/admin/supplier-invoices`)
+- **Proveedores:** CUIT, razón social, rubro, CBU/Alias bancario y contacto.
+- **Facturas:** Registro de comprobantes a pagar con importe, fecha de emisión, vencimiento y PDF adjunto.
+- **Flujo de Fondos (`/admin/supplier-invoices/print`):** Planilla para planificación de egresos y tesorería.
 
-## 4. Guía para Administradores, Contadores y Operadores
+### 3.9 Mesa de Ayuda / Gestión de Tickets (`/admin/tickets`)
+- Tablero de reclamos con filtros por estado, prioridad y categoría.
+- Asignación de responsable, respuestas públicas al residente y **Notas Internas Privadas** (visibles únicamente para la administración).
 
-![Panel de Administración](C:\Users\Alejandro Lo Presti\.gemini\antigravity\brain\e5bd1c76-20c3-4628-841a-300e2dae4192\manual_panel_administracion_1789645596516.jpg)
+### 3.10 Administración de Espacios Comunes y Reservas (`/admin/common-areas`, `/admin/reservations`)
+- **Espacios Comunes:** Parametrización de instalaciones (capacidad, arancel, horarios, duración de turnos, reglas y fotos).
+- **Reservas:** Aprobación o rechazo de solicitudes de uso efectuadas por los vecinos.
 
-### 4.1 Dashboard y Métricas Ejecutivas
-El panel de control centraliza los indicadores clave del country club:
-- **Tasa de Recaudación del Mes**: Porcentaje de expensas cobradas vs pendientes.
-- **Deuda Total Acumulada**: Monto global en mora.
-- **Lotes Activos y Propietarios Registrados**.
-- **Tickets y Reclamos Abiertos** que requieren atención urgente.
+### 3.11 Novedades y Comunicados Masivos (`/admin/news`, `/admin/comms`)
+- **Novedades:** Publicación de noticias y avisos con imágenes y adjuntos.
+- **Comunicaciones Masivas:** Despacho de comunicados dirigidos a toda la comunidad o segmentados por lote, con soporte multicanal (Email y WhatsApp).
 
----
+### 3.12 Repositorio de Documentos (`/admin/documents`)
+- Subida de archivos con control de versiones (v1, v2), clasificación por categorías y visibilidad pública o privada.
 
-### 4.2 Gestión de Lotes y Unidades Funcionales
-**Ruta:** `Menú lateral > Lotes`
+### 3.13 Importador Masivo de Datos (`/admin/imports`)
+- Carga de planillas CSV/Excel para Lotes, Propietarios y Expensas.
+- **Validación previa:** Detección de errores fila por fila antes de impactar en la base de datos.
 
-- **Alta y Edición de Lotes**: Código de lote (Ej. `L-104`), número, superficie en $m^2$, coeficiente de prorrateo de expensas.
-- **Vinculación Dominial**: Asignar propietario titular, inquilino o cotitulares.
-- **Historial del Lote**: Ver la trazabilidad de propietarios anteriores, obras registradas y bitácora de novedades.
+### 3.14 Módulo de Auditoría y Control de Accesos (`/admin/audit`)
+- **Auditoría de Cambios y Cargas:** Registro automático de quién creó, modificó o eliminó cualquier registro, con IP, fecha y **Modal Comparativo (Diff)** de valores anteriores vs nuevos.
+- **Registro de Inicios de Sesión:** Auditoría de accesos exitosos, fallidos y bloqueados con IP, navegador y sistema operativo.
 
----
+### 3.15 Reportes y Adopción (`/admin/reports`, `/admin/adoption`)
+- Reportes de cobranzas y morosidad con exportación a Excel/CSV.
+- Métricas de adopción digital y campañas de invitación a residentes.
 
-### 4.3 Padrón de Propietarios y Residentes
-**Ruta:** `Menú lateral > Propietarios`
-
-- Registro de DNI/CUIT, razón social, teléfonos de contacto, correos electrónicos principales y secundarios.
-- Envío de invitaciones de acceso al portal y restablecimiento de credenciales.
-- Estado de cuenta unificado por propietario (incluso si posee múltiples lotes).
-
----
-
-### 4.4 Liquidación y Emisión de Expensas
-**Ruta:** `Menú lateral > Expensas > Períodos y Liquidación`
-
-```mermaid
-graph LR
-    P1[1. Crear Período de Expensas] --> P2[2. Cargar Gastos y Facturas]
-    P2 --> P3[3. Prorrateo Automático por Lote]
-    P3 --> P4[4. Aplicar Ajustes / Intereses]
-    P4 --> P5[5. Emitir y Distribuir PDF por Email]
-```
-
-1. **Crear Período**: Seleccione Mes y Año (Ej. Octubre 2026), 1º Fecha de Vencimiento y 2º Vencimiento.
-2. **Carga de Gastos del Mes**: Ingrese los ítems de gastos ordinarios y extraordinarios vinculados a facturas de proveedores.
-3. **Cálculo de Liquidación**: El sistema calcula la cuota proporcional de cada lote según su coeficiente.
-4. **Emisión y Notificación**: Con un solo clic, se generan las liquidaciones individuales, se actualizan las cuentas corrientes y se envían las expensas por correo electrónico a todos los propietarios.
-
----
-
-### 4.5 Conciliación de Pagos e Imputación
-**Ruta:** `Menú lateral > Pagos > Conciliación`
-
-1. Visualice el listado de **Pagos Informados por Propietarios**.
-2. Coteje el comprobante adjunto y el número de operación con el extracto de la cuenta bancaria del Country.
-3. **Aprobar Pago**:
-   - El sistema imputa el dinero a la expensa más antigua con deuda (o genera saldo a favor).
-   - Se emite el recibo oficial digital.
-   - Se notifica automáticamente al residente.
-4. **Rechazar Pago**: Permite especificar el motivo (Ej. *Comprobante ilegible, Importe no acreditado*) para que el vecino vuelva a informarlo.
-
----
-
-### 4.6 Proveedores y Cuentas a Pagar
-**Ruta:** `Menú lateral > Proveedores`
-
-- Catálogo de proveedores clasificados por rubro (*Seguridad, Mantenimiento de Piscinas, Electricidad, Jardinería*).
-- Registro de facturas recibidas, montos, fechas de vencimiento y estado de pago.
-
----
-
-### 4.7 Mesa de Ayuda y Gestión de Reclamos
-**Ruta:** `Menú lateral > Reclamos`
-
-- Tablero Kanban o lista interactiva de reclamos.
-- Asignación a operarios o cuadrillas de mantenimiento.
-- Carga de notas internas privadas (visibles solo para administradores) y respuestas públicas para el residente.
-- Cierre y calificación de satisfacción del servicio.
-
----
-
-## 5. Módulo de Auditoría y Control de Accesos
-
-Este módulo garantiza la total transparencia y seguridad operativa del sistema.
-
-### 5.1 Bitácora de Modificaciones y Cargas (Audit Logs)
-**Ruta:** `Menú lateral > Auditoría > Pestaña: Auditoría de Cambios y Cargas`
-
-- **Registro Automático**: Cada vez que un administrador, contador u operador crea, modifica o elimina un registro (un lote, un pago, una expensa, un usuario, un proveedor, etc.), el sistema guarda:
-  - **Operador Responsable** (Nombre y correo).
-  - **Módulo y Registro Afectado** (Ej. *Propietario #45*).
-  - **Tipo de Acción** (`Creación`, `Modificación`, `Eliminación`).
-  - **Dirección IP** del equipo de trabajo.
-- **Inspector de Cambios (Diff Modal)**: Al hacer clic en el botón **"Ver Cambios"**, se despliega una comparativa en tabla donde se resalta en **rojo** el valor anterior y en **verde** el nuevo valor modificado.
-
-### 5.2 Registro de Inicios de Sesión (Login Logs)
-**Ruta:** `Menú lateral > Auditoría > Pestaña: Registro de Inicios de Sesión (Logins)`
-
-- Supervisa todos los accesos a la plataforma:
-  - Logins Exitosos.
-  - Intentos Fallidos de contraseña.
-  - Accesos Bloqueados por exceso de intentos.
-  - Dispositivo, Navegador (Edge, Chrome, Safari) y Sistema Operativo (Windows, iOS, Android).
-
----
-
-## 6. Configuración del Sistema y Parámetros Globales
-
-**Ruta:** `Menú lateral > Configuración`
-
-- **Datos Institucionales**: Nombre oficial, CUIT, teléfono de guardia, dirección postal y logotipo.
-- **Servidor de Correo (SMTP)**: Configuración para el despacho de expensas y avisos por email.
-- **Parámetros Financieros**: Tasa de interés mensual por mora, recargo de 2º vencimiento y datos bancarios oficiales para transferencias.
+### 3.16 Parámetros Globales, SMTP y WhatsApp (`/admin/settings`)
+- Configuración institucional, tasas de mora, servidor SMTP para correos y API de WhatsApp con botones para prueba de conexión.
