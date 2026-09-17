@@ -55,6 +55,10 @@ class UserController extends Controller
      */
     public function create()
     {
+        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos para gestionar o crear usuarios.');
+        }
+
         $roles = Role::all();
         $functionalUnits = FunctionalUnit::with('lot')->get();
         return view('admin.users.create', compact('roles', 'functionalUnits'));
@@ -65,6 +69,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos para gestionar o crear usuarios.');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -116,6 +124,10 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos para editar usuarios.');
+        }
+
         $roles = Role::all();
         $functionalUnits = FunctionalUnit::with('lot')->get();
         $associatedUnits = $user->functionalUnits->pluck('id')->toArray();
@@ -129,6 +141,10 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos para editar usuarios.');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -174,6 +190,10 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos para eliminar usuarios.');
+        }
+
         if ($user->id === auth()->id()) {
             return back()->with('error', 'No puedes eliminar tu propio usuario.');
         }
@@ -187,6 +207,10 @@ class UserController extends Controller
      */
     public function toggleStatus(User $user)
     {
+        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos para cambiar el estado de usuarios.');
+        }
+
         if ($user->id === auth()->id()) {
             return back()->with('error', 'No puedes cambiar el estado de tu propio usuario.');
         }
@@ -203,6 +227,10 @@ class UserController extends Controller
      */
     public function resendInvite(User $user)
     {
+        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos para gestionar invitaciones.');
+        }
+
         // Resets password to temp and logs invitation sent
         $tempPassword = Str::random(12);
         $user->password = Hash::make($tempPassword);
@@ -219,6 +247,10 @@ class UserController extends Controller
      */
     public function updatePassword(Request $request, User $user)
     {
+        if (!auth()->user()->hasPermission('manage-users') && !auth()->user()->isSuperAdmin()) {
+            abort(403, 'No tienes permisos para actualizar contraseñas de usuarios.');
+        }
+
         $request->validate([
             'password' => 'required|string|min:6|confirmed',
         ], [

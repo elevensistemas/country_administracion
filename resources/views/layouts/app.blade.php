@@ -335,9 +335,11 @@
                     <a href="{{ route('admin.owners.index') }}" class="ios-nav-link {{ Route::is('admin.owners.*') ? 'active' : '' }}">
                         <i class="bi bi-people-fill"></i> Propietarios
                     </a>
+                    @if(Auth::user()->hasPermission('manage-users') || Auth::user()->isSuperAdmin())
                     <a href="{{ route('admin.users.index') }}" class="ios-nav-link {{ Route::is('admin.users.*') ? 'active' : '' }}">
                         <i class="bi bi-person-fill-gear"></i> Usuarios
                     </a>
+                    @endif
                     <a href="{{ route('admin.lots.index') }}" class="ios-nav-link {{ Route::is('admin.lots.*') || Route::is('admin.functional-units.*') ? 'active' : '' }}">
                         <i class="bi bi-house-fill"></i> Lotes y Unidades
                     </a>

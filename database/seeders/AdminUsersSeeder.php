@@ -134,5 +134,48 @@ class AdminUsersSeeder extends Seeder
         if ($roleOperator && !$operator1->roles()->where('name', 'operator')->exists()) {
             $operator1->roles()->attach($roleOperator->id);
         }
+
+        // 6. Country Administration Team (10 Operadores con control total salvo creación de usuarios)
+        $team = [
+            ['name' => 'Cora', 'last_name' => 'Barrera', 'email' => 'c.barrera@laranita.com', 'phone' => '+5491140010001', 'dni' => '30000001'],
+            ['name' => 'Camila', 'last_name' => 'Gonzalez', 'email' => 'c.gonzalez@laranita.com', 'phone' => '+5491140010002', 'dni' => '30000002'],
+            ['name' => 'Maria', 'last_name' => 'Romero', 'email' => 'm.romero@laranita.com', 'phone' => '+5491140010003', 'dni' => '30000003'],
+            ['name' => 'Camila', 'last_name' => 'Soria', 'email' => 'c.soria@laranita.com', 'phone' => '+5491140010004', 'dni' => '30000004'],
+            ['name' => 'Lara', 'last_name' => 'Garcia', 'email' => 'l.garcia@laranita.com', 'phone' => '+5491140010005', 'dni' => '30000005'],
+            ['name' => 'Juan', 'last_name' => 'Villafañe', 'email' => 'j.villafane@laranita.com', 'phone' => '+5491140010006', 'dni' => '30000006'],
+            ['name' => 'Ignacio', 'last_name' => 'Villalfañe', 'email' => 'i.villalfane@laranita.com', 'phone' => '+5491140010007', 'dni' => '30000007'],
+            ['name' => 'Federico', 'last_name' => 'Chichirico', 'email' => 'f.chichirico@laranita.com', 'phone' => '+5491140010008', 'dni' => '30000008'],
+            ['name' => 'Lorena', 'last_name' => 'La Manna', 'email' => 'l.lamanna@laranita.com', 'phone' => '+5491140010009', 'dni' => '30000009'],
+            ['name' => 'Martin', 'last_name' => 'Corbalan', 'email' => 'm.corbalan@laranita.com', 'phone' => '+5491140010010', 'dni' => '30000010'],
+        ];
+
+        foreach ($team as $member) {
+            $user = User::where('email', $member['email'])->first();
+            if (!$user) {
+                $user = User::create([
+                    'name' => $member['name'],
+                    'last_name' => $member['last_name'],
+                    'email' => $member['email'],
+                    'phone' => $member['phone'],
+                    'dni' => $member['dni'],
+                    'status' => 'active',
+                    'relationship_type' => 'operator',
+                    'password' => Hash::make('alguna123'),
+                    'email_verified_at' => now(),
+                    'login_count' => 0,
+                    'terms_accepted_at' => now(),
+                ]);
+            } else {
+                $user->update([
+                    'password' => Hash::make('alguna123'),
+                    'status' => 'active',
+                    'relationship_type' => 'operator',
+                ]);
+            }
+
+            if ($roleOperator && !$user->roles()->where('name', 'operator')->exists()) {
+                $user->roles()->sync([$roleOperator->id]);
+            }
+        }
     }
 }

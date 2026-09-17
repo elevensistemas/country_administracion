@@ -73,8 +73,12 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
         $roleModels['operator']->permissions()->sync([
             $permissionModels['manage-lots']->id,
+            $permissionModels['manage-finances']->id,
+            $permissionModels['manage-payments']->id,
             $permissionModels['manage-tickets']->id,
             $permissionModels['manage-communications']->id,
+            $permissionModels['view-reports']->id,
+            $permissionModels['view-audit']->id,
             $permissionModels['use-portal']->id,
         ]);
         $roleModels['accounting']->permissions()->sync([
