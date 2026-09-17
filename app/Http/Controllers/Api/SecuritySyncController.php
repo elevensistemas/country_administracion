@@ -136,6 +136,143 @@ class SecuritySyncController extends Controller
     }
 
     /**
+     * Master synchronization endpoint: returns Units/Lots, Residents/Users, and Authorizations.
+     * GET /api/security/master-sync?since=<cursor>&full_backfill=1
+     */
+    public function masterSync(Request $request): JsonResponse
+    {
+        $device = $this->authenticateDevice($request);
+        if (!$device) {
+            return response()->json([
+                'success' => false,
+                'error' => 'No autorizado. Token de dispositivo inválido o revocado.'
+            ], 401);
+        }
+
+        $since = $request->input('since');
+        $fullBackfill = $request->boolean('full_backfill', false);
+
+        // 1. Lots / Units
+        $lotsQuery = \App\Models\Lot::query();
+        if (!empty($since) && !$fullBackfill) {
+            try {
+                $lotsQuery->where('updated_at', '>', Carbon::parse($since));
+            } catch (\Exception $e) {}
+        }
+        $lots = $lotsQuery->get()->map(function (\App\Models\Lot $lot) {
+            return [
+                'id' => $lot->id,
+                'number' => (string) $lot->number,
+                'code' => $lot->code,
+                'name' => $lot->name ?: "Lote {$lot->number}",
+                'internal_address' => $lot->internal_address,
+                'status' => $lot->status,
+                'updated_at' => $lot->updated_at?->toISOString(),
+            ];
+        });
+
+        // 2. Residents / Users (Owners, Tenants, Residents)
+        $usersQuery = \App\Models\User::whereIn('relationship_type', ['owner', 'tenant', 'resident', 'board'])
+            ->with(['functionalUnits.lot']);
+        if (!empty($since) && !$fullBackfill) {
+            try {
+                $usersQuery->where('updated_at', '>', Carbon::parse($since));
+            } catch (\Exception $e) {}
+        }
+        $residents = $usersQuery->get()->map(function (\App\Models\User $user) {
+            $associatedUnits = $user->functionalUnits->map(function ($fu) {
+                return [
+                    'functional_unit_id' => $fu->id,
+                    'lot_id' => $fu->lot_id,
+                    'lot_number' => $fu->lot?->number ?? (string) $fu->name,
+                    'is_owner' => in_array($fu->pivot->relationship_type ?? 'owner', ['owner', 'co_owner']),
+                    'relationship_type' => $fu->pivot->relationship_type ?? 'owner',
+                ];
+            });
+
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'last_name' => $user->last_name,
+                'full_name' => $user->full_name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'dni' => $user->dni,
+                'status' => $user->status,
+                'active' => $user->status === 'active',
+                'relationship_type' => $user->relationship_type,
+                'units' => $associatedUnits,
+                'updated_at' => $user->updated_at?->toISOString(),
+            ];
+        });
+
+        // 3. Guest Authorizations
+        $authQuery = GuestAuthorization::with(['lot', 'user']);
+        if (!empty($since) && !$fullBackfill) {
+            try {
+                $authQuery->where('updated_at', '>', Carbon::parse($since));
+            } catch (\Exception $e) {}
+        } elseif (!$fullBackfill) {
+            $authQuery->where(function ($q) {
+                $q->where('updated_at', '>=', now()->subDays(60))
+                  ->orWhere('status', 'active');
+            });
+        }
+        $authorizations = $authQuery->get()->map(function (GuestAuthorization $auth) {
+            return [
+                'uuid' => $auth->uuid,
+                'lot_number' => $auth->lot?->number ?? 'N/A',
+                'lot_id' => $auth->lot_id,
+                'owner_name' => $auth->user?->full_name ?? 'Propietario',
+                'owner_email' => $auth->user?->email,
+                'type' => $auth->type,
+                'guest_name' => $auth->name,
+                'guest_last_name' => $auth->last_name,
+                'guest_full_name' => $auth->full_name,
+                'guest_dni' => $auth->dni,
+                'license_plate' => $auth->license_plate,
+                'status' => $auth->status,
+                'valid_from' => $auth->valid_from?->toDateTimeString() ?? ($auth->visit_date ? "{$auth->visit_date->toDateString()} 00:00:00" : null),
+                'valid_until' => $auth->valid_until?->toDateTimeString() ?? ($auth->visit_date ? "{$auth->visit_date->toDateString()} 23:59:59" : null),
+                'cancelled_at' => $auth->cancelled_at?->toISOString(),
+                'notes' => $auth->notes,
+                'qr_code' => $auth->qr_code ?: $auth->uuid,
+                'updated_at' => $auth->updated_at->toISOString(),
+            ];
+        });
+
+        $nextCursor = now()->toISOString();
+
+        // Update device
+        $device->update([
+            'last_seen_at' => now(),
+            'last_sync_cursor' => $nextCursor,
+        ]);
+
+        SecuritySyncLog::create([
+            'security_device_id' => $device->id,
+            'since_cursor' => $since,
+            'records_count' => $lots->count() + $residents->count() + $authorizations->count(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'status' => 'success',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'server_time' => now()->toISOString(),
+            'device' => [
+                'name' => $device->name,
+                'identifier' => $device->device_identifier,
+            ],
+            'next_cursor' => $nextCursor,
+            'units' => $lots,
+            'residents' => $residents,
+            'authorizations' => $authorizations,
+        ]);
+    }
+
+    /**
      * Record a check-in event from the guardhouse.
      * POST /api/security/check-in
      */
