@@ -305,7 +305,7 @@
                             </div>
                         </div>
                         <div class="col-lg-5 text-center">
-                            <img src="{{ asset('img/manual/manual_portada_1789645553441.jpg') }}" alt="Portada Sistema La Ranita" class="img-mockup" style="max-height: 280px;">
+                            <img src="/img/manual/login_real.png" alt="Acceso al Sistema La Ranita" class="img-mockup" style="max-height: 280px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 15px 35px rgba(0,0,0,0.35);">
                         </div>
                     </div>
                 </div>
@@ -397,10 +397,18 @@
                 <section id="owner-dashboard" class="glass-card p-4 p-md-5 mb-4">
                     <h3 class="section-title"><i class="bi bi-phone-fill text-primary me-2"></i>2. Manual del Propietario / Residente (Mi Portal)</h3>
 
-                    <!-- Visual Mockup Card -->
+                    <!-- Visual Real Screens Card -->
                     <div class="p-4 bg-light rounded-4 border text-center mb-4">
-                        <img src="{{ asset('img/manual/manual_portal_propietario_1789645574473.jpg') }}" alt="Portal del Propietario" class="img-mockup mb-3" style="max-height: 380px;">
-                        <div class="small text-muted fw-semibold">Portal de Residentes: optimizado para teléfonos celulares, tablets y computadoras.</div>
+                        <div class="row align-items-center g-3">
+                            <div class="col-lg-8">
+                                <img src="/img/manual/owner_dashboard_real.png" alt="Portal del Propietario en PC" class="img-mockup w-100 mb-2">
+                                <div class="small text-muted fw-semibold">Vista Escritorio: Panel consolidado del lote y accesos inmediatos.</div>
+                            </div>
+                            <div class="col-lg-4 text-center">
+                                <img src="/img/manual/owner_mobile_real.png" alt="Portal del Propietario en Móvil" class="img-mockup" style="max-height: 380px;">
+                                <div class="small text-muted fw-semibold mt-2">Vista Móvil (App Web)</div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 2.1 Dashboard -->
@@ -445,23 +453,30 @@
                     <!-- 2.4 Informar Pago -->
                     <div class="mb-4" id="owner-payments">
                         <h5 class="fw-bold text-dark"><i class="bi bi-cash-coin text-primary me-2"></i>2.4 Informar Pago de Expensas (<span class="badge-path">/owner/payments/report</span>)</h5>
-                        <p class="small text-muted">Cuando el residente abona mediante transferencia o depósito bancario, debe cargar el aviso de pago:</p>
-                        
-                        <div class="p-3 bg-light rounded-3 border small">
-                            <div class="fw-bold text-dark mb-2">Campos del Formulario:</div>
-                            <ol class="mb-3 ps-3 text-muted">
-                                <li><strong>Importe Transferido ($):</strong> Monto exacto en pesos transferido.</li>
-                                <li><strong>Fecha del Pago:</strong> Día en que se realizó la operación bancaria.</li>
-                                <li><strong>Medio de Pago:</strong> Selección entre <em>Transferencia Bancaria</em>, <em>Depósito Bancario</em> u <em>Otro Medio</em>.</li>
-                                <li><strong>Banco de Destino:</strong> Cuenta bancaria a la que se transfirió (ej. Banco Galicia o Banco Nación).</li>
-                                <li><strong>N° de Comprobante / Referencia:</strong> Código o número de transacción bancaria.</li>
-                                <li><strong>Adjuntar Comprobante:</strong> Archivo digital (PDF, JPG o PNG de hasta 5MB).</li>
-                                <li><strong>Observaciones:</strong> Campo opcional para notas aclaratorias.</li>
-                            </ol>
-                            <div class="fw-bold text-dark mb-1">Qué ocurre al guardar:</div>
-                            <p class="mb-0 text-muted">
-                                El pago queda registrado con estado <code>Pendiente</code>. En cuanto Administración lo verifica contra su extracto bancario, el estado cambia a <code>Conciliado</code> y el saldo de la cuenta corriente se cancela automáticamente.
-                            </p>
+                        <p class="small text-muted">Cuando el residente abona mediante transferencia o depósito bancario, debe cargar el aviso de pago para su posterior conciliación:</p>
+                        <div class="row g-3 align-items-center mb-3">
+                            <div class="col-lg-7">
+                                <div class="p-3 bg-light rounded-3 border small h-100">
+                                    <div class="fw-bold text-dark mb-2">Campos del Formulario:</div>
+                                    <ol class="mb-3 ps-3 text-muted">
+                                        <li><strong>Importe Transferido ($):</strong> Monto exacto en pesos transferido.</li>
+                                        <li><strong>Fecha del Pago:</strong> Día en que se realizó la operación bancaria.</li>
+                                        <li><strong>Medio de Pago:</strong> Selección entre <em>Transferencia Bancaria</em>, <em>Depósito Bancario</em> u <em>Otro Medio</em>.</li>
+                                        <li><strong>Banco de Destino:</strong> Cuenta bancaria a la que se transfirió (ej. Banco Galicia o Banco Nación).</li>
+                                        <li><strong>N° de Comprobante / Referencia:</strong> Código o número de transacción bancaria.</li>
+                                        <li><strong>Adjuntar Comprobante:</strong> Archivo digital (PDF, JPG o PNG de hasta 5MB).</li>
+                                        <li><strong>Observaciones:</strong> Campo opcional para notas aclaratorias.</li>
+                                    </ol>
+                                    <div class="fw-bold text-dark mb-1">Qué ocurre al guardar:</div>
+                                    <p class="mb-0 text-muted">
+                                        El pago queda registrado con estado <code>Pendiente</code>. En cuanto Administración lo verifica contra su extracto bancario, el estado cambia a <code>Conciliado</code> y el saldo de la cuenta corriente se cancela automáticamente.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 text-center">
+                                <img src="/img/manual/owner_report_payment_real.png" alt="Formulario Informar Pago" class="img-mockup w-100">
+                                <div class="small text-muted fw-semibold mt-1">Formulario interactivo de carga de pagos</div>
+                            </div>
                         </div>
                     </div>
 
@@ -480,13 +495,17 @@
                     <!-- 2.6 Reservas -->
                     <div class="mb-4" id="owner-reservations">
                         <h5 class="fw-bold text-dark"><i class="bi bi-calendar-check-fill text-primary me-2"></i>2.6 Espacios Comunes y Reservas (<span class="badge-path">/owner/reservations</span>)</h5>
-                        <div class="feature-card">
+                        <div class="feature-card mb-3">
                             <ul class="mb-0 ps-3 small text-muted">
                                 <li><strong>Catálogo de Espacios:</strong> Muestra los espacios disponibles configurados por la administración con su capacidad máxima, duración de turno, precio/arancel (o <em>Sin Costo</em>) y descripción.</li>
                                 <li><strong>Solicitar Reserva:</strong> Se elige la fecha, el horario de inicio y fin, notas y se acepta el reglamento del espacio.</li>
                                 <li><strong>Estados:</strong> <code>Pendiente de Aprobación</code>, <code>Aprobada</code>, <code>Rechazada</code> o <code>Cancelada</code>.</li>
                                 <li><strong>Cancelación:</strong> El propietario puede cancelar sus reservas futuras directamente desde su listado.</li>
                             </ul>
+                        </div>
+                        <div class="text-center">
+                            <img src="/img/manual/owner_reservations_real.png" alt="Gestión de Reservas de Espacios Comunes" class="img-mockup w-100" style="max-height: 380px;">
+                            <div class="small text-muted fw-semibold mt-1">Catálogo y Mis Reservas confirmadas de espacios comunes</div>
                         </div>
                     </div>
 
@@ -547,10 +566,10 @@
                 <section id="admin-dashboard" class="glass-card p-4 p-md-5 mb-4">
                     <h3 class="section-title"><i class="bi bi-laptop-fill text-info me-2"></i>3. Manual de Administración y Operaciones</h3>
 
-                    <!-- Visual Mockup Card -->
+                    <!-- Visual Real Screen Card -->
                     <div class="p-4 bg-light rounded-4 border text-center mb-4">
-                        <img src="{{ asset('img/manual/manual_panel_administracion_1789645596516.jpg') }}" alt="Panel de Administración" class="img-mockup mb-3" style="max-height: 380px;">
-                        <div class="small text-muted fw-semibold">Tablero de Control Ejecutivo para Operadores y Administradores.</div>
+                        <img src="/img/manual/admin_dashboard_real.png" alt="Panel de Administración" class="img-mockup w-100 mb-2">
+                        <div class="small text-muted fw-semibold">Tablero Principal: KPIs de Deuda, Pagos a Conciliar, Gráficos de Reclamos y Adopción Digital.</div>
                     </div>
 
                     <!-- 3.1 Dashboard -->
@@ -558,8 +577,9 @@
                         <h5 class="fw-bold text-dark"><i class="bi bi-speedometer2 text-info me-2"></i>3.1 Tablero Principal (<span class="badge-path">/admin</span>)</h5>
                         <div class="feature-card">
                             <ul class="mb-0 ps-3 small text-muted">
-                                <li><strong>Tarjetas de Métricas:</strong> Total de Lotes, Propietarios Activos, Monto Total de Expensas del Mes, Pagos Recibidos y Reclamos Abiertos.</li>
-                                <li><strong>Tablas y Gráficos:</strong> Distribución de estados de cobranza, últimos movimientos de cuenta corriente y accesos rápidos a tareas operativas.</li>
+                                <li><strong>Tarjetas de Métricas:</strong> Deuda Total Consolidada, Saldos a Favor de vecinos, Pagos a Conciliar y Porcentaje de Adopción del Portal.</li>
+                                <li><strong>Gráficos de Gestión:</strong> Reclamos por Categoría, Estado Operativo de Tickets y Adopción Digital.</li>
+                                <li><strong>Tablas de Monitoreo:</strong> Reclamos recientes con estado en vivo y Pagos reportados pendientes de confirmación.</li>
                             </ul>
                         </div>
                     </div>
@@ -567,11 +587,15 @@
                     <!-- 3.2 Lotes y Unidades Funcionales -->
                     <div class="mb-4" id="admin-lots">
                         <h5 class="fw-bold text-dark"><i class="bi bi-grid-3x3 text-info me-2"></i>3.2 Catastro de Lotes y Unidades Funcionales (<span class="badge-path">/admin/lots</span>)</h5>
-                        <div class="feature-card">
+                        <div class="feature-card mb-3">
                             <ul class="mb-0 ps-3 small text-muted">
                                 <li><strong>Lotes:</strong> Alta y edición de número de lote, código identificador, dirección interna, estado (Baldío, En Construcción, Habitado), propietario titular y saldo consolidado.</li>
-                                <li><strong>Unidades Funcionales (<span class="badge-path">/admin/functional-units</span>):</strong> Registro de UFs vinculadas a cada lote con su respectivo código y coeficiente de participación para el prorrateo de expensas.</li>
+                                <li><strong>Unidades Funcionales (<span class="badge-path">/admin/functional-units</span>):</strong> Registro de UFs vinculadas a cada lote con su respectivo código, co-titulares y saldo acumulado.</li>
                             </ul>
+                        </div>
+                        <div class="text-center">
+                            <img src="/img/manual/admin_lots_real.png" alt="Administración de Unidades Funcionales" class="img-mockup w-100" style="max-height: 380px;">
+                            <div class="small text-muted fw-semibold mt-1">Catálogo de Unidades Funcionales, asignación de lotes y saldos</div>
                         </div>
                     </div>
 
@@ -589,17 +613,21 @@
                     <!-- 3.4 Propietarios y Usuarios -->
                     <div class="row g-3 mb-2" id="admin-owners">
                         <div class="col-md-6">
-                            <div class="feature-card">
+                            <div class="feature-card h-100">
                                 <h6 class="fw-bold text-dark mb-2"><i class="bi bi-person-lines-fill text-info me-1"></i>Padrón de Propietarios (<span class="badge-path">/admin/owners</span>)</h6>
                                 <p class="small text-muted mb-0">Alta y modificación de propietarios con Nombre, Apellido, Razón Social, DNI, CUIT, teléfonos, correos y canal de contacto preferido.</p>
                             </div>
                         </div>
                         <div class="col-md-6" id="admin-users">
-                            <div class="feature-card">
+                            <div class="feature-card h-100">
                                 <h6 class="fw-bold text-dark mb-2"><i class="bi bi-person-badge text-info me-1"></i>Usuarios del Sistema (<span class="badge-path">/admin/users</span>)</h6>
                                 <p class="small text-muted mb-0">Gestión de cuentas. Permite crear usuarios, asignar roles (Admin, Operador, Contador, Propietario), activar/desactivar cuentas, reenviar invitaciones y resetear contraseñas.</p>
                             </div>
                         </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <img src="/img/manual/admin_users_real.png" alt="Gestión de Usuarios y Roles" class="img-mockup w-100" style="max-height: 380px;">
+                        <div class="small text-muted fw-semibold mt-1">Padrón de cuentas de usuarios, estados, roles asignados y controles de acceso</div>
                     </div>
                 </section>
 
@@ -609,22 +637,26 @@
                 <section id="admin-expenses" class="glass-card p-4 p-md-5 mb-4">
                     <h3 class="section-title"><i class="bi bi-calculator-fill text-warning me-2"></i>4. Gestión Contable, Pagos y Proveedores</h3>
 
-                    <!-- Visual Mockup Card -->
+                    <!-- Visual Real Screen Card -->
                     <div class="p-4 bg-light rounded-4 border text-center mb-4">
-                        <img src="{{ asset('img/manual/manual_finanzas_conciliacion_1789649413987.jpg') }}" alt="Finanzas y Conciliación" class="img-mockup mb-3" style="max-height: 380px;">
-                        <div class="small text-muted fw-semibold">Módulo Contable: Liquidación masiva, Conciliación bancaria y Control de Cuentas por Pagar.</div>
+                        <img src="/img/manual/admin_payments_real.png" alt="Finanzas y Conciliación de Pagos" class="img-mockup w-100 mb-2">
+                        <div class="small text-muted fw-semibold">Tablero de Conciliación Bancaria: Control de pagos pendientes, coincidencia de montos y auto-conciliación.</div>
                     </div>
 
                     <!-- 4.1 Facturación de Expensas -->
                     <div class="mb-4">
                         <h5 class="fw-bold text-dark"><i class="bi bi-receipt-cutoff text-warning me-2"></i>4.1 Facturación y Liquidación de Expensas (<span class="badge-path">/admin/expenses</span>)</h5>
-                        <div class="p-3 bg-light rounded-3 border small">
+                        <div class="p-3 bg-light rounded-3 border small mb-3">
                             <div class="fw-bold text-dark mb-1">Flujo de Emisión:</div>
                             <ol class="mb-2 ps-3 text-muted">
                                 <li><strong>Crear Período (<span class="badge-path">/admin/expenses/create-period</span>):</strong> Se define el mes/año (ej. <em>10/2026</em>), fechas de 1° y 2° vencimiento, porcentaje de recargo y notas.</li>
                                 <li><strong>Generar Expensas Masivas:</strong> Calcula automáticamente la cuota de cada lote/UF multiplicando los gastos por su coeficiente, o permite <strong>Importar Expensas desde Excel</strong>.</li>
                                 <li><strong>Publicar y Descargar:</strong> Se revisan los montos generados y se hace clic en <strong>Publicar</strong> para impactar en las cuentas corrientes y habilitar la descarga del PDF a los residentes.</li>
                             </ol>
+                        </div>
+                        <div class="text-center">
+                            <img src="/img/manual/admin_expenses_real.png" alt="Módulo de Expensas y Liquidaciones" class="img-mockup w-100" style="max-height: 380px;">
+                            <div class="small text-muted fw-semibold mt-1">Listado de períodos de expensas, emisión masiva e importación</div>
                         </div>
                     </div>
 
@@ -681,10 +713,10 @@
                 <section id="admin-audit" class="glass-card p-4 p-md-5 mb-4">
                     <h3 class="section-title"><i class="bi bi-shield-check text-danger me-2"></i>5. Auditoría, Trazabilidad y Configuración</h3>
 
-                    <!-- Visual Mockup Card -->
+                    <!-- Visual Real Screen Card -->
                     <div class="p-4 bg-light rounded-4 border text-center mb-4">
-                        <img src="{{ asset('img/manual/manual_auditoria_seguridad_1789649331627.jpg') }}" alt="Auditoría y Seguridad" class="img-mockup mb-3" style="max-height: 380px;">
-                        <div class="small text-muted fw-semibold">Módulo de Auditoría: Inspección forense de cambios de datos (Diff) y Registro de accesos por IP.</div>
+                        <img src="/img/manual/admin_audit_real.png" alt="Auditoría y Bitácora de Eventos" class="img-mockup w-100 mb-2">
+                        <div class="small text-muted fw-semibold">Bitácora de Eventos y Control de Accesos: Trazabilidad por IP, usuario y diferencias en datos.</div>
                     </div>
 
                     <!-- 5.1 Bitácora de Cambios -->
