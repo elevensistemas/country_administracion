@@ -36,11 +36,13 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $throttleKey = strtolower($request->input('email')) . '|' . $request->ip();
+        $inputEmail = strtolower(trim($request->input('email')));
+        $normalizedEmail = str_replace(['ñ', 'Ñ'], 'n', $inputEmail);
+        $throttleKey = $inputEmail . '|' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
@@ -62,7 +64,9 @@ class LoginController extends Controller
             ]);
         }
 
-        $user = User::where('email', $request->input('email'))->first();
+        $user = User::where('email', $inputEmail)
+            ->orWhere('email', $normalizedEmail)
+            ->first();
 
         if (!$user || !Hash::check($request->input('password'), $user->password)) {
             RateLimiter::hit($throttleKey, 60);

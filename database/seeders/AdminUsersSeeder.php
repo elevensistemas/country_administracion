@@ -143,7 +143,7 @@ class AdminUsersSeeder extends Seeder
             ['name' => 'Camila', 'last_name' => 'Soria', 'email' => 'c.soria@laranita.com', 'phone' => '+5491140010004', 'dni' => '30000004'],
             ['name' => 'Lara', 'last_name' => 'Garcia', 'email' => 'l.garcia@laranita.com', 'phone' => '+5491140010005', 'dni' => '30000005'],
             ['name' => 'Juan', 'last_name' => 'Villafañe', 'email' => 'j.villafane@laranita.com', 'phone' => '+5491140010006', 'dni' => '30000006'],
-            ['name' => 'Ignacio', 'last_name' => 'Villalfañe', 'email' => 'i.villalfane@laranita.com', 'phone' => '+5491140010007', 'dni' => '30000007'],
+            ['name' => 'Ignacio', 'last_name' => 'Villafañe', 'email' => 'i.villafane@laranita.com', 'phone' => '+5491140010007', 'dni' => '30000007'],
             ['name' => 'Federico', 'last_name' => 'Chichirico', 'email' => 'f.chichirico@laranita.com', 'phone' => '+5491140010008', 'dni' => '30000008'],
             ['name' => 'Lorena', 'last_name' => 'La Manna', 'email' => 'l.lamanna@laranita.com', 'phone' => '+5491140010009', 'dni' => '30000009'],
             ['name' => 'Martin', 'last_name' => 'Corbalan', 'email' => 'm.corbalan@laranita.com', 'phone' => '+5491140010010', 'dni' => '30000010'],
