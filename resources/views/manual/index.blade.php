@@ -271,6 +271,7 @@
                     <a href="#admin-accounting" class="nav-link-manual"><i class="bi bi-currency-dollar me-2 text-warning"></i> Cuentas Corrientes y Ajustes</a>
                     <a href="#admin-payments" class="nav-link-manual"><i class="bi bi-check2-all me-2 text-warning"></i> Conciliación de Pagos</a>
                     <a href="#admin-suppliers" class="nav-link-manual"><i class="bi bi-truck me-2 text-warning"></i> Proveedores y Facturas</a>
+                    <a href="#admin-reports" class="nav-link-manual"><i class="bi bi-bar-chart-line-fill me-2 text-warning"></i> Reportes y Estadísticas</a>
                     <a href="#admin-tickets" class="nav-link-manual"><i class="bi bi-tools me-2 text-warning"></i> Gestión de Tickets y Amenidades</a>
 
                     <div class="text-uppercase text-muted fw-bold px-2 mt-3 mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">5. Seguridad y Auditoría</div>
@@ -691,7 +692,7 @@
                     </div>
 
                     <!-- 4.4 Proveedores y Facturas -->
-                    <div class="row g-3" id="admin-suppliers">
+                    <div class="row g-3 mb-4" id="admin-suppliers">
                         <div class="col-md-6">
                             <div class="feature-card">
                                 <h6 class="fw-bold text-dark mb-2"><i class="bi bi-truck text-warning me-1"></i>Padrón de Proveedores (<span class="badge-path">/admin/suppliers</span>)</h6>
@@ -703,6 +704,30 @@
                                 <h6 class="fw-bold text-dark mb-2"><i class="bi bi-receipt text-warning me-1"></i>Facturas de Compra (<span class="badge-path">/admin/supplier-invoices</span>)</h6>
                                 <p class="small text-muted mb-0">Carga de facturas recibidas con número, concepto, monto, fecha de emisión, vencimiento y vista de <strong>Flujo Semanal (<span class="badge-path">/admin/supplier-invoices/print</span>)</strong>.</p>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- 4.5 Reportes Ejecutivos y Estadísticas -->
+                    <div class="mb-4" id="admin-reports">
+                        <h5 class="fw-bold text-dark"><i class="bi bi-bar-chart-line-fill text-warning me-2"></i>4.5 Tablero Ejecutivo de Reportes y Estadísticas (<span class="badge-path">/admin/reports</span>)</h5>
+                        <div class="feature-card mb-3">
+                            <p class="small text-muted mb-2">
+                                Centro integral de inteligencia operativa, morosidad y auditoría contable. Ofrece métricas consolidadas en tiempo real, gráficos de evolución financiera y herramientas de exportación masiva.
+                            </p>
+                            <ul class="mb-0 ps-3 small text-muted">
+                                <li><strong>Tarjetas de Métricas Principales (KPIs):</strong> Recaudación acumulada del año seleccionado, Total facturado en expensas, Deuda activa de lotes morosos y Compras/Gastos a proveedores con selector interactivo de año.</li>
+                                <li><strong>Pestaña Finanzas y Cobranzas:</strong> Comparativa mensual de cobranzas confirmadas vs. liquidaciones emitidas y balance de posición neta del consorcio.</li>
+                                <li><strong>Pestaña Ranking de Morosidad:</strong> Listado jerárquico de lotes con saldo deudor, datos de contacto del propietario (teléfono, email) y estado del lote.</li>
+                                <li><strong>Pestaña Proveedores y Gastos:</strong> Resumen de gastos por empresa proveedora, historial de facturas y control de vencimientos.</li>
+                                <li><strong>Pestaña Reclamos e Incidencias:</strong> Distribución de tickets según categoría, estado de resolución y calificación de atención del vecino.</li>
+                                <li><strong>Pestaña Padrón de Lotes:</strong> Estado de habitabilidad (Baldío, En Construcción, Habitado) y unidades funcionales asociadas.</li>
+                                <li><strong>Exportación Masiva a CSV / Excel (<span class="badge-path">/admin/reports/export</span>):</strong> Descargas directas en formato CSV con cabecera UTF-8 BOM compatible con Microsoft Excel (Morosos, Padrón de Lotes, Cobranzas, Proveedores y Reclamos).</li>
+                                <li><strong>Modo de Impresión / PDF:</strong> Botón <em>"Imprimir Informe"</em> adaptado con diseño ejecutivo limpio y legible para reuniones de comisión o asambleas.</li>
+                            </ul>
+                        </div>
+                        <div class="text-center">
+                            <img src="/img/manual/admin_reports_real.png" alt="Tablero Ejecutivo de Reportes y Estadísticas" class="img-mockup w-100" style="max-height: 440px;">
+                            <div class="small text-muted fw-semibold mt-1">Tablero Ejecutivo de Reportes: KPIs anuales, pestañas de análisis y exportación de datos</div>
                         </div>
                     </div>
                 </section>
