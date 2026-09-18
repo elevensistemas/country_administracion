@@ -15,7 +15,7 @@
                 </div>
                 <div>
                     <div class="text-muted small fw-medium">Eventos Totales</div>
-                    <div class="fs-4 fw-bold text-dark">{{ number_format($metrics['total_audits']) }}</div>
+                    <div class="fs-4 fw-bold text-body">{{ number_format($metrics['total_audits']) }}</div>
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
                 </div>
                 <div>
                     <div class="text-muted small fw-medium">Cambios Hoy</div>
-                    <div class="fs-4 fw-bold text-dark">{{ number_format($metrics['today_audits']) }}</div>
+                    <div class="fs-4 fw-bold text-body">{{ number_format($metrics['today_audits']) }}</div>
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
                 </div>
                 <div>
                     <div class="text-muted small fw-medium">Logins Exitosos Hoy</div>
-                    <div class="fs-4 fw-bold text-dark">{{ number_format($metrics['today_logins']) }}</div>
+                    <div class="fs-4 fw-bold text-body">{{ number_format($metrics['today_logins']) }}</div>
                 </div>
             </div>
         </div>
@@ -48,7 +48,7 @@
                 </div>
                 <div>
                     <div class="text-muted small fw-medium">Accesos Fallidos Hoy</div>
-                    <div class="fs-4 fw-bold text-dark">{{ number_format($metrics['today_failed_log']) }}</div>
+                    <div class="fs-4 fw-bold text-body">{{ number_format($metrics['today_failed_log']) }}</div>
                 </div>
             </div>
         </div>
@@ -128,9 +128,9 @@
         <div class="ios-card p-0 overflow-hidden">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                    <thead class="bg-body-tertiary">
                         <tr class="border-bottom text-muted" style="font-size: 0.8rem; font-weight: 600;">
-                            <th class="ps-3 py-3" style="width: 14%;">FECHA / HORA</th>
+                            <th class="ps-3 py-3" style="width: 15%;">FECHA / HORA</th>
                             <th style="width: 18%;">OPERADOR</th>
                             <th style="width: 12%;">ACCIÓN</th>
                             <th style="width: 18%;">MÓDULO AFECTADO</th>
@@ -140,21 +140,29 @@
                     </thead>
                     <tbody>
                         @forelse($auditLogs as $log)
+                            @php
+                                $dt = $log->created_at ? $log->created_at->timezone('America/Argentina/Buenos_Aires') : null;
+                            @endphp
                             <tr class="border-bottom">
-                                <td class="ps-3" style="font-size: 0.85rem;">
-                                    <span class="fw-semibold text-dark">{{ $log->created_at ? $log->created_at->format('d/m/Y') : '-' }}</span>
-                                    <br>
-                                    <small class="text-muted">{{ $log->created_at ? $log->created_at->format('H:i:s') : '' }}</small>
+                                <td class="ps-3 py-2" style="font-size: 0.85rem;">
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold text-body" style="font-size: 0.88rem;">
+                                            <i class="bi bi-calendar3 me-1 text-primary opacity-75"></i>{{ $dt ? $dt->format('d/m/Y') : '-' }}
+                                        </span>
+                                        <span class="text-body-secondary font-monospace" style="font-size: 0.8rem;">
+                                            <i class="bi bi-clock me-1 text-info opacity-75"></i>{{ $dt ? $dt->format('H:i:s \h\s') : '' }}
+                                        </span>
+                                    </div>
                                 </td>
                                 <td>
                                     @if($log->user)
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; font-size: 0.75rem;">
+                                            <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 32px; height: 32px; font-size: 0.75rem;">
                                                 {{ strtoupper(substr($log->user->name, 0, 1) . substr($log->user->last_name ?? '', 0, 1)) }}
                                             </div>
                                             <div>
-                                                <div class="fw-bold text-dark" style="font-size: 0.85rem;">{{ $log->user->name }} {{ $log->user->last_name }}</div>
-                                                <small class="text-muted" style="font-size: 0.75rem;">{{ $log->user->email }}</small>
+                                                <div class="fw-bold text-body" style="font-size: 0.85rem;">{{ $log->user->name }} {{ $log->user->last_name }}</div>
+                                                <small class="text-body-secondary" style="font-size: 0.75rem;">{{ $log->user->email }}</small>
                                             </div>
                                         </div>
                                     @else
@@ -175,29 +183,30 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <span class="fw-bold text-dark" style="font-size: 0.85rem;">{{ $log->human_model_name }}</span>
+                                    <span class="fw-bold text-body" style="font-size: 0.85rem;">{{ $log->human_model_name }}</span>
                                     <br>
-                                    <small class="text-muted font-monospace" style="font-size: 0.75rem;">ID: #{{ $log->model_id }}</small>
+                                    <small class="text-body-secondary font-monospace" style="font-size: 0.75rem;">ID: #{{ $log->model_id }}</small>
                                 </td>
                                 <td>
                                     @php
                                         $oldVal = is_array($log->old_values) ? $log->old_values : json_decode($log->old_values, true);
                                         $newVal = is_array($log->new_values) ? $log->new_values : json_decode($log->new_values, true);
                                         $changedKeys = array_unique(array_merge(array_keys($oldVal ?? []), array_keys($newVal ?? [])));
+                                        $formattedDateFull = $dt ? $dt->format('d/m/Y H:i:s \h\s') : '';
                                     @endphp
 
                                     @if($log->action === 'update' && !empty($newVal))
                                         <div class="d-flex align-items-center gap-2 flex-wrap">
-                                            <span class="badge bg-light text-dark border" style="font-size: 0.75rem;">
+                                            <span class="badge bg-body-secondary text-body border" style="font-size: 0.75rem;">
                                                 {{ count($changedKeys) }} {{ count($changedKeys) === 1 ? 'campo modificado' : 'campos modificados' }}
                                                 ({{ implode(', ', array_slice($changedKeys, 0, 3)) }}{{ count($changedKeys) > 3 ? '...' : '' }})
                                             </span>
-                                            <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size: 0.75rem;" 
+                                            <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 rounded-pill" style="font-size: 0.75rem;" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#auditDiffModal"
                                                 data-title="Modificación en {{ $log->human_model_name }} #{{ $log->model_id }}"
-                                                data-operator="{{ $log->user ? $log->user->name . ' ' . $log->user->last_name : 'Sistema' }}"
-                                                data-date="{{ $log->created_at ? $log->created_at->format('d/m/Y H:i:s') : '' }}"
+                                                data-operator="{{ $log->user ? $log->user->name . ' ' . $log->user->last_name . ' (' . $log->user->email . ')' : 'Sistema' }}"
+                                                data-date="{{ $formattedDateFull }}"
                                                 data-action="{{ $log->action }}"
                                                 data-old="{{ json_encode($oldVal) }}"
                                                 data-new="{{ json_encode($newVal) }}">
@@ -209,12 +218,12 @@
                                             <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.75rem;">
                                                 Nuevo registro creado
                                             </span>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 0.75rem;" 
+                                            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 rounded-pill" style="font-size: 0.75rem;" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#auditDiffModal"
                                                 data-title="Alta de {{ $log->human_model_name }} #{{ $log->model_id }}"
-                                                data-operator="{{ $log->user ? $log->user->name . ' ' . $log->user->last_name : 'Sistema' }}"
-                                                data-date="{{ $log->created_at ? $log->created_at->format('d/m/Y H:i:s') : '' }}"
+                                                data-operator="{{ $log->user ? $log->user->name . ' ' . $log->user->last_name . ' (' . $log->user->email . ')' : 'Sistema' }}"
+                                                data-date="{{ $formattedDateFull }}"
                                                 data-action="{{ $log->action }}"
                                                 data-old="{}"
                                                 data-new="{{ json_encode($newVal) }}">
@@ -226,12 +235,12 @@
                                             <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 0.75rem;">
                                                 Registro eliminado
                                             </span>
-                                            <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size: 0.75rem;" 
+                                            <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2 rounded-pill" style="font-size: 0.75rem;" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#auditDiffModal"
                                                 data-title="Eliminación de {{ $log->human_model_name }} #{{ $log->model_id }}"
-                                                data-operator="{{ $log->user ? $log->user->name . ' ' . $log->user->last_name : 'Sistema' }}"
-                                                data-date="{{ $log->created_at ? $log->created_at->format('d/m/Y H:i:s') : '' }}"
+                                                data-operator="{{ $log->user ? $log->user->name . ' ' . $log->user->last_name . ' (' . $log->user->email . ')' : 'Sistema' }}"
+                                                data-date="{{ $formattedDateFull }}"
                                                 data-action="{{ $log->action }}"
                                                 data-old="{{ json_encode($oldVal) }}"
                                                 data-new="{}">
@@ -243,7 +252,7 @@
                                     @endif
                                 </td>
                                 <td class="text-end pe-3">
-                                    <code class="small text-muted">{{ $log->ip_address ?? '-' }}</code>
+                                    <code class="small text-body-secondary">{{ $log->ip_address ?? '-' }}</code>
                                 </td>
                             </tr>
                         @empty
@@ -318,7 +327,7 @@
         <div class="ios-card p-0 overflow-hidden">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                    <thead class="bg-body-tertiary">
                         <tr class="border-bottom text-muted" style="font-size: 0.8rem; font-weight: 600;">
                             <th class="ps-3 py-3" style="width: 15%;">FECHA / HORA</th>
                             <th style="width: 25%;">USUARIO</th>
@@ -329,21 +338,29 @@
                     </thead>
                     <tbody>
                         @forelse($loginLogs as $login)
+                            @php
+                                $dtLogin = $login->created_at ? $login->created_at->timezone('America/Argentina/Buenos_Aires') : null;
+                            @endphp
                             <tr class="border-bottom">
-                                <td class="ps-3" style="font-size: 0.85rem;">
-                                    <span class="fw-semibold text-dark">{{ $login->created_at ? $login->created_at->format('d/m/Y') : '-' }}</span>
-                                    <br>
-                                    <small class="text-muted">{{ $login->created_at ? $login->created_at->format('H:i:s') : '' }}</small>
+                                <td class="ps-3 py-2" style="font-size: 0.85rem;">
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold text-body" style="font-size: 0.88rem;">
+                                            <i class="bi bi-calendar3 me-1 text-primary opacity-75"></i>{{ $dtLogin ? $dtLogin->format('d/m/Y') : '-' }}
+                                        </span>
+                                        <span class="text-body-secondary font-monospace" style="font-size: 0.8rem;">
+                                            <i class="bi bi-clock me-1 text-info opacity-75"></i>{{ $dtLogin ? $dtLogin->format('H:i:s \h\s') : '' }}
+                                        </span>
+                                    </div>
                                 </td>
                                 <td>
                                     @if($login->user)
                                         <div class="d-flex align-items-center">
-                                            <div class="rounded-circle bg-dark bg-opacity-10 text-dark fw-bold d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 0.75rem;">
+                                            <div class="rounded-circle bg-dark bg-opacity-10 text-body fw-bold d-flex align-items-center justify-content-center me-2 flex-shrink-0" style="width: 32px; height: 32px; font-size: 0.75rem;">
                                                 {{ strtoupper(substr($login->user->name, 0, 1) . substr($login->user->last_name ?? '', 0, 1)) }}
                                             </div>
                                             <div>
-                                                <div class="fw-bold text-dark" style="font-size: 0.85rem;">{{ $login->user->name }} {{ $login->user->last_name }}</div>
-                                                <small class="text-muted" style="font-size: 0.75rem;">{{ $login->user->email }}</small>
+                                                <div class="fw-bold text-body" style="font-size: 0.85rem;">{{ $login->user->name }} {{ $login->user->last_name }}</div>
+                                                <small class="text-body-secondary" style="font-size: 0.75rem;">{{ $login->user->email }}</small>
                                             </div>
                                         </div>
                                     @else
@@ -373,16 +390,16 @@
                                     <div class="d-flex align-items-center">
                                         <i class="bi bi-laptop me-2 text-muted"></i>
                                         <div>
-                                            <span class="text-dark small fw-medium">{{ $login->simplified_agent }}</span>
+                                            <span class="text-body small fw-medium">{{ $login->simplified_agent }}</span>
                                             <br>
-                                            <small class="text-muted text-truncate d-inline-block" style="max-width: 250px;" title="{{ $login->user_agent }}">
+                                            <small class="text-body-secondary text-truncate d-inline-block" style="max-width: 250px;" title="{{ $login->user_agent }}">
                                                 {{ $login->user_agent }}
                                             </small>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="text-end pe-3">
-                                    <span class="badge bg-light text-dark font-monospace border">{{ $login->ip_address ?? '-' }}</span>
+                                    <span class="badge bg-body-secondary text-body font-monospace border">{{ $login->ip_address ?? '-' }}</span>
                                 </td>
                             </tr>
                         @empty
@@ -413,15 +430,15 @@
         <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
             <div class="modal-header border-bottom py-3">
                 <div>
-                    <h5 class="modal-title fw-bold text-dark" id="modalDiffTitle">Detalle de Modificación</h5>
-                    <small class="text-muted" id="modalDiffMeta">Operador y Fecha</small>
+                    <h5 class="modal-title fw-bold text-body" id="modalDiffTitle">Detalle de Modificación</h5>
+                    <div class="small text-body-secondary mt-1" id="modalDiffMeta">Operador y Fecha</div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body p-4">
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle mb-0" id="modalDiffTable">
-                        <thead class="bg-light">
+                        <thead class="bg-body-tertiary">
                             <tr class="text-muted" style="font-size: 0.8rem;">
                                 <th style="width: 30%;">CAMPO / ATRIBUTO</th>
                                 <th style="width: 35%;" class="text-danger bg-danger bg-opacity-10">VALOR ANTERIOR</th>
@@ -468,7 +485,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch(e) { newVal = {}; }
 
         document.getElementById('modalDiffTitle').innerText = title;
-        document.getElementById('modalDiffMeta').innerText = `Realizado por: ${operator} — Fecha: ${date}`;
+        document.getElementById('modalDiffMeta').innerHTML = `
+            <span class="badge bg-primary-subtle text-primary me-2"><i class="bi bi-person-fill me-1"></i>${operator}</span>
+            <span class="badge bg-body-secondary text-body font-monospace"><i class="bi bi-clock-history me-1"></i>${date}</span>
+        `;
 
         const tbody = document.getElementById('modalDiffBody');
         tbody.innerHTML = '';
@@ -487,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const afterVal = newVal && newVal[key] !== undefined ? (typeof newVal[key] === 'object' ? JSON.stringify(newVal[key]) : String(newVal[key])) : '<span class="text-muted fst-italic">[vacío]</span>';
             
             tr.innerHTML = `
-                <td class="fw-semibold font-monospace small text-dark">${key}</td>
+                <td class="fw-semibold font-monospace small text-body">${key}</td>
                 <td class="small font-monospace text-break bg-danger bg-opacity-10">${beforeVal}</td>
                 <td class="small font-monospace text-break bg-success bg-opacity-10">${afterVal}</td>
             `;
