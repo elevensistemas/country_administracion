@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use App\Traits\Auditable;
 
 class Communication extends Model
@@ -22,8 +23,18 @@ class Communication extends Model
         return $this->belongsTo(User::class, 'sent_by');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'sent_by');
+    }
+
     public function recipients(): HasMany
     {
         return $this->hasMany(CommunicationRecipient::class);
+    }
+
+    public function deliveries(): HasManyThrough
+    {
+        return $this->hasManyThrough(CommunicationDelivery::class, CommunicationRecipient::class);
     }
 }

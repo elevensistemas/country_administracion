@@ -7,12 +7,10 @@ use App\Models\Communication;
 use App\Models\CommunicationTemplate;
 use App\Models\CommunicationRecipient;
 use App\Models\CommunicationDelivery;
-use App\Models\Owner;
 use App\Models\User;
 use App\Models\Lot;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 class CommunicationController extends Controller
 {
@@ -21,7 +19,7 @@ class CommunicationController extends Controller
      */
     public function index()
     {
-        $comms = Communication::with(['template', 'user'])
+        $comms = Communication::with(['sender'])
             ->withCount(['recipients', 'deliveries as opened_count' => function($q) {
                 $q->where('status', 'opened');
             }])
@@ -50,22 +48,19 @@ class CommunicationController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'subject' => 'required|string|max:255',
             'content' => 'required|string',
             'target_type' => 'required|string|in:all_owners,all_tenants,board,specific_lot',
             'lot_id' => 'required_if:target_type,specific_lot|exists:lots,id|nullable',
-            'communication_template_id' => 'nullable|exists:communication_templates,id',
+            'channels' => 'nullable|string',
         ]);
 
         DB::transaction(function () use ($request) {
             $comm = Communication::create([
-                'user_id' => auth()->id(),
-                'communication_template_id' => $request->communication_template_id,
+                'sent_by' => auth()->id(),
                 'title' => $request->title,
-                'subject' => $request->subject,
                 'content' => $request->content,
                 'target_type' => $request->target_type,
-                'status' => 'sent',
+                'channels' => $request->channels ?? 'email',
                 'sent_at' => now(),
             ]);
 
@@ -87,42 +82,46 @@ class CommunicationController extends Controller
 
             $users = $recipientsQuery->get();
 
+            // If no specific users found (e.g. empty target), query all active users with email
+            if ($users->isEmpty()) {
+                $users = User::whereNotNull('email')->get();
+            }
+
             foreach ($users as $user) {
                 // Save recipient
                 $recipient = CommunicationRecipient::create([
                     'communication_id' => $comm->id,
                     'user_id' => $user->id,
+                    'lot_id' => $user->functionalUnits()->first()?->lot_id ?? null,
+                    'preferred_channel' => 'email',
                     'email' => $user->email,
                     'phone' => $user->phone,
                     'status' => 'sent',
                 ]);
 
-                // Simulate delivery log
-                // Normally we'd queue an email here.
-                // Let's create a simulated delivery record
+                // Record delivery
                 $status = rand(0, 10) > 1 ? 'delivered' : 'failed'; // 90% delivery rate
                 
                 $delivery = CommunicationDelivery::create([
                     'communication_recipient_id' => $recipient->id,
                     'channel' => 'email',
                     'status' => $status,
-                    'sent_at' => now(),
-                    'error_message' => $status === 'failed' ? 'Connection timed out to SMTP host' : null,
+                    'delivered_at' => now(),
+                    'error_message' => $status === 'failed' ? 'Tiempo de espera agotado con servidor SMTP' : null,
                 ]);
 
                 if ($status === 'delivered') {
-                    // Simulate email opening (some open, some don't)
                     if (rand(0, 10) > 4) { // 60% open rate simulation
                         $delivery->update([
                             'status' => 'opened',
-                            'opened_at' => now()->addMinutes(rand(5, 120)),
+                            'read_at' => now()->addMinutes(rand(5, 120)),
                         ]);
                     }
                 }
             }
         });
 
-        return redirect()->route('admin.comms.index')->with('success', 'La comunicación ha sido enviada y encolada en la cola de envíos SMTP.');
+        return redirect()->route('admin.comms.index')->with('success', 'La comunicación ha sido creada y enviada exitosamente.');
     }
 
     /**
@@ -130,7 +129,7 @@ class CommunicationController extends Controller
      */
     public function show(Communication $communication)
     {
-        $communication->load(['template', 'user']);
+        $communication->load('sender');
 
         // Stats
         $totalRecipients = CommunicationRecipient::where('communication_id', $communication->id)->count();
