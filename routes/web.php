@@ -92,6 +92,14 @@ Route::get('/manual', function () {
     return view('manual.index');
 })->name('manual');
 
+// Página Pública Institucional — Club de Campo La Ranita
+Route::get('/access/laranitacountryclub', [\App\Http\Controllers\PublicLandingController::class, 'index'])->name('public.landing');
+Route::post('/access/laranitacountryclub/contact', [\App\Http\Controllers\PublicLandingController::class, 'contact'])->name('public.landing.contact');
+Route::post('/access/laranitacountryclub/contacto', [\App\Http\Controllers\PublicLandingController::class, 'contact'])->name('public.landing.contacto');
+Route::get('/access/la-ranita-country-club', fn() => redirect()->route('public.landing', [], 301));
+Route::get('/laranitacountryclub', fn() => redirect()->route('public.landing', [], 301));
+Route::get('/la-ranita-country-club', fn() => redirect()->route('public.landing', [], 301));
+
 // Force Password Change & Terms Acceptance & Notifications
 Route::middleware(['auth'])->group(function () {
     Route::get('/password/force-change', [PasswordController::class, 'showForceChangeForm'])->name('password.force_change');
