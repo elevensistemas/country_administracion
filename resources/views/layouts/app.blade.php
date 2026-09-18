@@ -2,6 +2,17 @@
 <html lang="es" data-bs-theme="{{ $currentTheme ?? 'auto' }}">
 <head>
     <meta charset="UTF-8">
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme') || '{{ $currentTheme ?? "auto" }}';
+            var effectiveTheme = theme;
+            if (theme === 'auto') {
+                effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-bs-theme', effectiveTheme);
+            document.documentElement.style.backgroundColor = effectiveTheme === 'dark' ? '#000000' : '#f2f2f7';
+        })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - La Ranita Admin</title>
     <!-- Bootstrap 5.3 CSS -->
@@ -22,6 +33,18 @@
     <meta name="apple-mobile-web-app-title" content="La Ranita Admin">
     
     <style>
+        html {
+            background-color: #f2f2f7;
+        }
+        html[data-bs-theme="dark"] {
+            color-scheme: dark;
+            background-color: #000000;
+        }
+        html[data-bs-theme="light"] {
+            color-scheme: light;
+            background-color: #f2f2f7;
+        }
+
         :root {
             --ios-bg: #f2f2f7;
             --ios-card-bg: #ffffff;
@@ -47,12 +70,15 @@
             --ios-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
         }
 
+        .theme-switching, .theme-switching *, .theme-switching body {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+        }
+
         body {
             font-family: var(--font-outfit);
             background-color: var(--ios-bg);
             color: var(--ios-text);
             overflow-x: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* IOS Cards */
@@ -623,18 +649,22 @@
 
         function applyTheme(theme) {
             const html = document.documentElement;
+            let effectiveTheme = theme;
             if (theme === 'auto') {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                html.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
-            } else {
-                html.setAttribute('data-bs-theme', theme);
+                effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             }
+            html.setAttribute('data-bs-theme', effectiveTheme);
+            html.style.backgroundColor = effectiveTheme === 'dark' ? '#000000' : '#f2f2f7';
             updateThemeButtons(theme);
         }
 
         function setTheme(theme) {
+            document.documentElement.classList.add('theme-switching');
             applyTheme(theme);
             localStorage.setItem('theme', theme);
+            setTimeout(() => {
+                document.documentElement.classList.remove('theme-switching');
+            }, 300);
 
             // Send ajax request to persist preference on server
             fetch("{{ route('preferences.theme') }}", {

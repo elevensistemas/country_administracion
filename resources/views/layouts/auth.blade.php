@@ -2,6 +2,17 @@
 <html lang="es" data-bs-theme="{{ $currentTheme ?? 'auto' }}">
 <head>
     <meta charset="UTF-8">
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme') || '{{ $currentTheme ?? "auto" }}';
+            var effectiveTheme = theme;
+            if (theme === 'auto') {
+                effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-bs-theme', effectiveTheme);
+            document.documentElement.style.backgroundColor = effectiveTheme === 'dark' ? '#000000' : '#f2f2f7';
+        })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - La Ranita Admin</title>
     <!-- Bootstrap 5.3 CSS -->
@@ -23,6 +34,18 @@
     <meta name="apple-mobile-web-app-title" content="La Ranita">
 
     <style>
+        html {
+            background-color: #f2f2f7;
+        }
+        html[data-bs-theme="dark"] {
+            color-scheme: dark;
+            background-color: #000000;
+        }
+        html[data-bs-theme="light"] {
+            color-scheme: light;
+            background-color: #f2f2f7;
+        }
+
         :root {
             --ios-bg: #f2f2f7;
             --ios-card-bg: rgba(255, 255, 255, 0.85);
