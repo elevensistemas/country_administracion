@@ -264,7 +264,7 @@ Route::prefix('admin')
 // ==========================================
 Route::prefix('owner')
     ->name('owner.')
-    ->middleware(['auth', 'role:owner,tenant,board'])
+    ->middleware(['auth', 'role:owner,tenant,board,admin,superadmin,operator,accounting'])
     ->group(function () {
 
         // Dashboard Propietario

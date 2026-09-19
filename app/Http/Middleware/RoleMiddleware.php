@@ -20,6 +20,11 @@ class RoleMiddleware
 
         $user = Auth::user();
 
+        // Superadmin and admin have full access to switch between admin & owner views
+        if ($user->isAdmin() || $user->isSuperAdmin()) {
+            return $next($request);
+        }
+
         // Check if user has any of the required roles
         foreach ($roles as $role) {
             if ($user->hasRole($role) || $user->relationship_type === $role) {

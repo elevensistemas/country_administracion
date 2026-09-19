@@ -308,6 +308,13 @@
                     <li><span class="dropdown-item-text fw-bold text-success">{{ $user->full_name }}</span></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item rounded-3" href="{{ route('owner.profile.show') }}"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
+                    @if(Auth::user()->isAdmin() || Auth::user()->isSuperAdmin() || in_array(Auth::user()->relationship_type, ['admin', 'superadmin', 'operator', 'accounting']))
+                    <li>
+                        <a class="dropdown-item rounded-3 text-primary fw-semibold bg-primary-subtle my-1" href="{{ route('admin.dashboard') }}">
+                            <i class="bi bi-shield-lock-fill me-2 text-primary"></i>Vista Administrador
+                        </a>
+                    </li>
+                    @endif
                     <li><a class="dropdown-item rounded-3" href="{{ route('owner.property.index') }}"><i class="bi bi-house me-2"></i>Mi Propiedad</a></li>
                     <li>
                         <!-- Theme Toggle Button inside profile menu -->
@@ -462,68 +469,24 @@
             });
         }
 
-        // Session Activity & Inactivity Keep-Alive / Auto-Redirect
+        // Background Keep-Alive for Persistent Mobile & Desktop Session
         (function() {
-            let lastActivityTime = Date.now();
-            const INACTIVITY_TIMEOUT_MS = 45 * 60 * 1000; // 45 min
-            const PING_INTERVAL_MS = 10 * 60 * 1000; // 10 min
-
-            function recordActivity() {
-                lastActivityTime = Date.now();
+            const PING_INTERVAL_MS = 5 * 60 * 1000; // 5 min
+            function ping() {
+                if (document.visibilityState === 'visible') {
+                    fetch("{{ route('ping-session') }}", {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    }).catch(() => {});
+                }
             }
 
-            ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
-                window.addEventListener(evt, recordActivity, { passive: true });
-            });
-
-            // When user returns to tab/app after phone was locked or app in background
-            document.addEventListener('visibilitychange', function() {
+            document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') {
-                    checkSessionHealth();
+                    ping();
                 }
             });
 
-            window.addEventListener('pageshow', function(event) {
-                if (event.persisted) {
-                    checkSessionHealth();
-                }
-            });
-
-            function checkSessionHealth() {
-                const timeInactive = Date.now() - lastActivityTime;
-                if (timeInactive > INACTIVITY_TIMEOUT_MS) {
-                    window.location.href = "{{ route('login') }}";
-                    return;
-                }
-
-                fetch("{{ route('ping-session') }}", {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                .then(res => {
-                    if (res.status === 401 || res.status === 419) {
-                        window.location.href = "{{ route('login') }}";
-                        return null;
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    if (data && data.authenticated === false) {
-                        window.location.href = "{{ route('login') }}";
-                    }
-                })
-                .catch(() => {});
-            }
-
-            setInterval(function() {
-                if (document.visibilityState === 'visible') {
-                    const timeInactive = Date.now() - lastActivityTime;
-                    if (timeInactive < INACTIVITY_TIMEOUT_MS) {
-                        fetch("{{ route('ping-session') }}").catch(() => {});
-                    } else {
-                        window.location.href = "{{ route('login') }}";
-                    }
-                }
-            }, PING_INTERVAL_MS);
+            setInterval(ping, PING_INTERVAL_MS);
         })();
     </script>
     @yield('scripts')

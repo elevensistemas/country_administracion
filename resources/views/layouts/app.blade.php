@@ -352,7 +352,7 @@
 
             <!-- Navigation Links -->
             <div class="py-3" style="max-height: 70vh; overflow-y: auto;">
-                @if(Auth::user()->isAdmin() || Auth::user()->relationship_type === 'accounting' || Auth::user()->relationship_type === 'operator')
+                @if(request()->is('admin*') || (Auth::user()->isAdmin() && !request()->is('owner*')))
                     <!-- ADMIN MENU -->
                     <small class="text-uppercase text-muted fw-bold px-4 py-2 d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión</small>
                     <a href="{{ route('admin.dashboard') }}" class="ios-nav-link {{ Route::is('admin.dashboard') ? 'active' : '' }}">
@@ -429,6 +429,15 @@
                     <a href="{{ route('manual') }}" target="_blank" class="ios-nav-link text-success">
                         <i class="bi bi-book-fill"></i> Manual del Sistema
                     </a>
+
+                    @if(Auth::user()->isAdmin() || Auth::user()->isSuperAdmin() || in_array(Auth::user()->relationship_type, ['admin', 'superadmin', 'operator', 'accounting']))
+                        <div class="px-3 mt-3 pt-2 border-top border-ios">
+                            <small class="text-muted fw-bold d-block mb-1" style="font-size: 0.68rem; letter-spacing: 0.5px;">MODO DE VISTA</small>
+                            <a href="{{ route('owner.dashboard') }}" class="btn btn-sm btn-outline-success w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 py-2 shadow-sm" style="font-size: 0.82rem;">
+                                <i class="bi bi-house-door-fill text-success"></i> <span class="fw-semibold">Vista Propietario</span>
+                            </a>
+                        </div>
+                    @endif
                 @else
                     <!-- OWNER / RESIDENT MENU -->
                     <small class="text-uppercase text-muted fw-bold px-4 py-2 d-block" style="font-size: 0.7rem; letter-spacing: 1px;">Mi Portal</small>
@@ -462,6 +471,15 @@
                     <a href="{{ route('manual') }}" target="_blank" class="ios-nav-link text-success">
                         <i class="bi bi-book-fill"></i> Manual de Usuario
                     </a>
+
+                    @if(Auth::user()->isAdmin() || Auth::user()->isSuperAdmin() || in_array(Auth::user()->relationship_type, ['admin', 'superadmin', 'operator', 'accounting']))
+                        <div class="px-3 mt-3 pt-2 border-top border-ios">
+                            <small class="text-muted fw-bold d-block mb-1" style="font-size: 0.68rem; letter-spacing: 0.5px;">MODO DE VISTA</small>
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-sm btn-outline-primary w-100 rounded-3 d-flex align-items-center justify-content-center gap-2 py-2 shadow-sm" style="font-size: 0.82rem;">
+                                <i class="bi bi-shield-lock-fill text-primary"></i> <span class="fw-semibold">Vista Administrador</span>
+                            </a>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>

@@ -10,7 +10,7 @@
             @csrf
 
             <!-- Profile Info -->
-            <div class="ios-card">
+            <div class="ios-card mb-3">
                 <h5 class="fw-bold mb-4"><i class="bi bi-person-fill text-success me-2"></i>Mis Datos Registrados</h5>
                 
                 <div class="row g-3">
@@ -35,6 +35,27 @@
                     </div>
                 </div>
             </div>
+
+            @if(Auth::user()->isAdmin() || Auth::user()->isSuperAdmin() || in_array(Auth::user()->relationship_type, ['admin', 'superadmin', 'operator', 'accounting']))
+            <!-- Dual Mode View Switcher -->
+            <div class="ios-card mb-3 border border-primary-subtle" style="background: linear-gradient(135deg, rgba(13, 110, 253, 0.05) 0%, rgba(25, 135, 84, 0.05) 100%);">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary text-white rounded-circle p-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 44px; height: 44px;">
+                            <i class="bi bi-arrow-left-right fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1 text-primary">Modo de Vista de Usuario</h6>
+                            <p class="text-muted small mb-0">Estás en <strong>Vista Propietario</strong>. Tu cuenta posee permisos de gestión para ingresar al panel de administración.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-primary btn-ios rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        <span>Cambiar a Vista Administrador</span>
+                    </a>
+                </div>
+            </div>
+            @endif
 
             <!-- Password Change -->
             <div class="ios-card">
