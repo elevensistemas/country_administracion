@@ -561,18 +561,54 @@
                     </div>
                 </div>
 
-                <!-- Map Frame -->
-                <div class="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-slate-200 h-[480px]">
+                <!-- Map Frame with Satellite View & Mode Switcher -->
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-900 h-[520px] flex flex-col">
+                    <!-- Map Controls Header -->
+                    <div class="absolute top-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2 pointer-events-auto">
+                        <div class="flex items-center gap-1 p-1 bg-slate-900/85 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg text-xs font-semibold text-white">
+                            <button type="button" onclick="setMapType('h')" id="btnMapH" class="px-3 py-1.5 rounded-xl bg-brand-600 text-white transition">
+                                🛰️ Satélite Híbrido
+                            </button>
+                            <button type="button" onclick="setMapType('m')" id="btnMapM" class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white transition">
+                                🗺️ Calles
+                            </button>
+                            <button type="button" onclick="setMapType('p')" id="btnMapP" class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white transition">
+                                ⛰️ Terreno
+                            </button>
+                        </div>
+
+                        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-900/85 backdrop-blur-md rounded-2xl border border-white/20 text-xs text-white">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>GPS: -34.4772, -59.0379</span>
+                        </div>
+                    </div>
+
+                    <!-- Live Satellite Iframe -->
                     <iframe 
-                        title="Mapa Club de Campo La Ranita"
-                        src="https://maps.google.com/maps?q=-34.4772223,-59.0379338&t=&z=14&ie=UTF8&iwloc=&output=embed" 
-                        width="100%" 
-                        height="100%" 
-                        style="border:0;" 
+                        id="ranitaMapIframe"
+                        title="Mapa Satelital Club de Campo La Ranita"
+                        src="https://maps.google.com/maps?q=-34.4772223,-59.0379338&t=h&z=15&ie=UTF8&iwloc=&output=embed" 
+                        class="w-full h-full border-0"
                         allowfullscreen="" 
                         loading="lazy" 
                         referrerpolicy="no-referrer-when-downgrade">
                     </iframe>
+
+                    <!-- Floating Bottom Info Badge -->
+                    <div class="absolute bottom-4 left-4 right-4 z-10 pointer-events-auto flex items-center justify-between p-3.5 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-brand-800 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                                LR
+                            </div>
+                            <div>
+                                <h6 class="font-bold text-slate-900 text-xs">Club de Campo La Ranita</h6>
+                                <p class="text-[11px] text-slate-500">Manzanares (Pilar) &bull; Open Door (Luján)</p>
+                            </div>
+                        </div>
+                        <a href="https://maps.google.com/?q=-34.4772223,-59.0379338" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition shrink-0">
+                            Cómo Llegar &rarr;
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -820,6 +856,29 @@
                 switchToImage();
             });
         })();
+
+        // Map View Type Switcher (Satélite Híbrido, Calles, Terreno)
+        function setMapType(type) {
+            const iframe = document.getElementById('ranitaMapIframe');
+            const btnH = document.getElementById('btnMapH');
+            const btnM = document.getElementById('btnMapM');
+            const btnP = document.getElementById('btnMapP');
+            if (!iframe) return;
+
+            const zoom = type === 'h' ? 15 : 14;
+            iframe.src = `https://maps.google.com/maps?q=-34.4772223,-59.0379338&t=${type}&z=${zoom}&ie=UTF8&iwloc=&output=embed`;
+
+            // Reset active button styles
+            [btnH, btnM, btnP].forEach(btn => {
+                if (btn) {
+                    btn.className = 'px-3 py-1.5 rounded-xl text-slate-300 hover:text-white transition';
+                }
+            });
+
+            if (type === 'h' && btnH) btnH.className = 'px-3 py-1.5 rounded-xl bg-brand-600 text-white transition font-bold shadow';
+            if (type === 'm' && btnM) btnM.className = 'px-3 py-1.5 rounded-xl bg-brand-600 text-white transition font-bold shadow';
+            if (type === 'p' && btnP) btnP.className = 'px-3 py-1.5 rounded-xl bg-brand-600 text-white transition font-bold shadow';
+        }
     </script>
 </body>
 </html>
