@@ -151,11 +151,19 @@
 
     <!-- HERO SECTION -->
     <section id="inicio" class="relative min-h-[90vh] flex items-center justify-center bg-brand-950 overflow-hidden">
-        <!-- Background Image -->
-        <img src="{{ asset('img/landing/hero_main.jpg') }}" alt="Club de Campo La Ranita Manzanares" class="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 ease-out">
+        <!-- Background Media Container (Video + Image Cross-fade) -->
+        <div class="absolute inset-0 w-full h-full overflow-hidden">
+            <!-- Background Image -->
+            <img id="heroImage" src="{{ asset('img/landing/hero_main.jpg') }}" alt="Club de Campo La Ranita Manzanares" class="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-opacity duration-1000 ease-in-out opacity-0">
+
+            <!-- Background Video (Primary on load) -->
+            <video id="heroVideo" autoplay muted loop playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover object-center transform scale-105 transition-opacity duration-1000 ease-in-out opacity-100">
+                <source src="{{ asset('img/landing/hero_video.mp4') }}" type="video/mp4">
+            </video>
+        </div>
         
         <!-- Gradient Overlay -->
-        <div class="absolute inset-0 hero-gradient"></div>
+        <div class="absolute inset-0 hero-gradient z-0 pointer-events-none"></div>
 
         <!-- Hero Content -->
         <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center text-white z-10">
@@ -769,6 +777,49 @@
                 closeLightboxDirect();
             }
         });
+
+        // Hero Background Media Switcher (Video 20s <-> Imagen 20s)
+        (function() {
+            const heroVideo = document.getElementById('heroVideo');
+            const heroImage = document.getElementById('heroImage');
+            if (!heroVideo || !heroImage) return;
+
+            let showingVideo = true;
+
+            function switchToImage() {
+                heroVideo.classList.remove('opacity-100');
+                heroVideo.classList.add('opacity-0');
+                heroImage.classList.remove('opacity-0');
+                heroImage.classList.add('opacity-100');
+                showingVideo = false;
+            }
+
+            function switchToVideo() {
+                heroImage.classList.remove('opacity-100');
+                heroImage.classList.add('opacity-0');
+                heroVideo.classList.remove('opacity-0');
+                heroVideo.classList.add('opacity-100');
+                try {
+                    heroVideo.currentTime = 0;
+                    heroVideo.play().catch(function() {});
+                } catch(e) {}
+                showingVideo = true;
+            }
+
+            // Inicia mostrando el video; a los 20 segundos conmuta a la imagen fija y continúa alternando cada 20s
+            setInterval(function() {
+                if (showingVideo) {
+                    switchToImage();
+                } else {
+                    switchToVideo();
+                }
+            }, 20000);
+
+            // Fallback en caso de que el navegador bloquee el autoplay de video
+            heroVideo.play().catch(function() {
+                switchToImage();
+            });
+        })();
     </script>
 </body>
 </html>
