@@ -8,8 +8,15 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
-// Redirect root to login
+// Redirect root: if authenticated to dashboard, otherwise to login
 Route::get('/', function () {
+    if (\Illuminate\Support\Facades\Auth::check()) {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user->isAdmin() || $user->relationship_type === 'accounting' || $user->relationship_type === 'operator') {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('owner.dashboard');
+    }
     return redirect()->route('login');
 });
 

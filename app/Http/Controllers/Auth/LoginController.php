@@ -100,8 +100,8 @@ class LoginController extends Controller
             ]);
         }
 
-        // Login success
-        Auth::login($user, $request->boolean('remember'));
+        // Login success (Always remember session for app-like persistence)
+        Auth::login($user, true);
         RateLimiter::clear($throttleKey);
 
         // Update login stats
@@ -141,12 +141,18 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        // Redirect based on role
+        // Redirect based on role (prevent non-admins from being redirected to /admin intended URLs)
         if ($user->isAdmin() || $user->relationship_type === 'accounting' || $user->relationship_type === 'operator') {
             return redirect()->intended(route('admin.dashboard'));
         }
+
+        // For owners/residents: ensure we never send them to an admin URL
+        $intended = session()->get('url.intended');
+        if ($intended && (str_contains($intended, '/admin') || !str_contains($intended, '/owner'))) {
+            session()->forget('url.intended');
+        }
         
-        return redirect()->intended(route('owner.dashboard'));
+        return redirect()->route('owner.dashboard');
     }
 
     /**

@@ -27,6 +27,11 @@ class RoleMiddleware
             }
         }
 
-        abort(403, 'No tienes permisos para acceder a esta sección.');
+        // Graceful redirect based on user relationship type (simil app, never show raw 403)
+        if ($user->isAdmin() || in_array($user->relationship_type, ['admin', 'superadmin', 'operator', 'accounting'])) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('owner.dashboard');
     }
 }
