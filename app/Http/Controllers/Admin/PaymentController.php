@@ -32,7 +32,7 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Payment::with(['owner', 'lot', 'functionalUnit']);
+        $query = Payment::with(['owner', 'lot', 'functionalUnit', 'user', 'receipts']);
 
         // 1. Apply status filters
         $status = $request->input('status', 'pending');
@@ -115,7 +115,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        $payment->load(['owner', 'lot', 'functionalUnit', 'receipts', 'user']);
+        $payment->load(['owner', 'lot', 'functionalUnit', 'user', 'receipts']);
 
         // Duplicates check
         $potentialDuplicates = [];

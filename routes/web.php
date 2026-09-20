@@ -20,6 +20,11 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// Direct Storage Asset Server for Shared Hosting (Receipts, Images, Documents)
+Route::get('/storage/{path}', [\App\Http\Controllers\StorageController::class, 'show'])
+    ->where('path', '.*')
+    ->name('storage.serve');
+
 // Secure Maintenance & Migration Route for Shared Hosting
 Route::get('/__migrate', function (Request $request) {
     $key = $request->input('key');
@@ -36,7 +41,17 @@ Route::get('/__migrate', function (Request $request) {
     } elseif ($action === 'clear') {
         Artisan::call('optimize:clear');
     } elseif ($action === 'storage_link') {
+        $target = storage_path('app/public');
+        $link = public_path('storage');
+        if (!file_exists($link)) {
+            $link = base_path('../storage');
+        }
+        if (file_exists($link) && is_link($link)) {
+            @unlink($link);
+        }
+        @symlink($target, $link);
         Artisan::call('storage:link');
+        return response('<pre>Storage link created: ' . (file_exists($link) ? 'SUCCESS' : 'FAILED') . "\n" . Artisan::output() . '</pre>', 200);
     } elseif ($action === 'git_pull') {
         $output = shell_exec('git pull origin main 2>&1');
         Artisan::call('optimize:clear');

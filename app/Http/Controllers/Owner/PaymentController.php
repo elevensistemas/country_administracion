@@ -30,7 +30,7 @@ class PaymentController extends Controller
         $payments = [];
         if ($activeLot) {
             $payments = Payment::where('lot_id', $activeLot->id)
-                ->with(['lot', 'functionalUnit'])
+                ->with(['lot', 'functionalUnit', 'receipts'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
         }
@@ -44,13 +44,11 @@ class PaymentController extends Controller
     public function create()
     {
         $user = auth()->user();
-        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->unique('id');
+        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->filter()->unique('id');
         $activeLotId = session('active_lot_id');
-        $activeLot = $lots->firstWhere('id', $activeLotId);
-        if (!$activeLot) {
-            $activeLot = $lots->first();
-            $activeLotId = $activeLot?->id;
-            session(['active_lot_id' => $activeLotId]);
+        $activeLot = $lots->firstWhere('id', $activeLotId) ?: $lots->first();
+        if ($activeLot && $activeLotId !== $activeLot->id) {
+            session(['active_lot_id' => $activeLot->id]);
         }
 
         return view('owner.payments.report', compact('user', 'activeLot'));
@@ -72,12 +70,12 @@ class PaymentController extends Controller
         ]);
 
         $user = auth()->user();
-        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->unique('id');
+        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->filter()->unique('id');
         $activeLotId = session('active_lot_id');
-        $activeLot = $lots->firstWhere('id', $activeLotId);
+        $activeLot = $lots->firstWhere('id', $activeLotId) ?: $lots->first();
 
         if (!$activeLot) {
-            return redirect()->back()->with('error', 'Lote no seleccionado.');
+            return redirect()->back()->with('error', 'No posees un lote seleccionado para informar el pago.');
         }
 
         if ($request->filled('functional_unit_id')) {
@@ -96,18 +94,17 @@ class PaymentController extends Controller
         // Find owner profile associated to this user email, DNI or unit owner
         $owner = Owner::where('email', $user->email)->first()
             ?: ($user->dni ? Owner::where('dni', $user->dni)->first() : null)
+            ?: $activeLot->owner
             ?: $unit->owners()->first()
             ?: $activeLot->owners()->first();
 
-        if (!$owner) {
-            return redirect()->back()->with('error', 'No se encontró una ficha de propietario vinculada a tu cuenta para registrar el comprobante. Por favor contacta a administración.');
-        }
+        $ownerId = $owner ? $owner->id : ($activeLot->current_owner_id ?: null);
 
-        DB::transaction(function () use ($request, $user, $unit, $owner) {
+        DB::transaction(function () use ($request, $user, $unit, $activeLot, $ownerId, $owner) {
             $payment = Payment::create([
                 'functional_unit_id' => $unit->id,
-                'lot_id' => $unit->lot_id,
-                'owner_id' => $owner->id,
+                'lot_id' => $activeLot->id,
+                'owner_id' => $ownerId,
                 'user_id' => $user->id,
                 'amount' => $request->amount,
                 'payment_date' => $request->payment_date,

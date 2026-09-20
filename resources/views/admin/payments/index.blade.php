@@ -117,14 +117,25 @@
                         </td>
                         <td class="fw-bold">
                             @if($pay->lot)
-                                Lote {{ $pay->lot->number }}
+                                <span class="d-block text-dark fw-bold"><i class="bi bi-house-door-fill text-success me-1"></i>Lote {{ $pay->lot->number }}</span>
+                                @if($pay->functionalUnit)
+                                    <small class="text-muted fw-normal" style="font-size: 0.75rem;">{{ $pay->functionalUnit->name }}</small>
+                                @endif
                             @else
                                 <span class="text-danger"><i class="bi bi-question-circle me-1"></i>Sin Lote</span>
                             @endif
                         </td>
                         <td>
                             @if($pay->owner)
-                                {{ $pay->owner->full_name }}
+                                <span class="d-block fw-semibold text-dark">{{ $pay->owner->full_name }}</span>
+                                @if($pay->user && $pay->user->full_name !== $pay->owner->full_name)
+                                    <small class="text-muted d-block" style="font-size: 0.75rem;">
+                                        <i class="bi bi-person-circle me-1"></i>Inf: {{ $pay->user->full_name }}
+                                    </small>
+                                @endif
+                            @elseif($pay->user)
+                                <span class="d-block fw-semibold text-dark">{{ $pay->user->full_name }}</span>
+                                <small class="text-muted" style="font-size: 0.75rem;">(Usuario)</small>
                             @else
                                 <span class="text-muted">No Identificado</span>
                             @endif
@@ -132,6 +143,11 @@
                         <td style="font-size: 0.85rem;">
                             <span class="d-block text-capitalize fw-semibold">{{ $pay->payment_method }} • {{ $pay->bank ?? 'S/B' }}</span>
                             <span class="text-muted">Op: {{ $pay->operation_number ?? 'S/N' }} • Dep: {{ $pay->payment_date->format('d/m/Y') }}</span>
+                            @if($pay->receipts && $pay->receipts->count() > 0)
+                                <a href="{{ asset('storage/' . $pay->receipts->first()->file_path) }}" target="_blank" class="badge bg-success-subtle text-success text-decoration-none d-inline-flex align-items-center mt-1" style="font-size: 0.7rem;">
+                                    <i class="bi bi-paperclip me-1"></i>Comprobante
+                                </a>
+                            @endif
                         </td>
                         <td class="text-end fw-bold text-success" style="font-size: 1rem;">
                             ${{ number_format($pay->amount, 2, ',', '.') }}

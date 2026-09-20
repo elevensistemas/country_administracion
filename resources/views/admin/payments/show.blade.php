@@ -42,25 +42,41 @@
                     <td class="fw-semibold py-2">
                         @if($payment->lot)
                             <a href="{{ route('admin.lots.history', $payment->lot) }}" class="text-success text-decoration-none fw-bold">
-                                Lote {{ $payment->lot->number }}
+                                <i class="bi bi-house-door-fill me-1"></i>Lote {{ $payment->lot->number }}
                             </a>
+                            @if($payment->functionalUnit)
+                                <span class="text-muted ms-1">({{ $payment->functionalUnit->name }})</span>
+                            @endif
                         @else
                             <span class="text-danger fw-bold"><i class="bi bi-question-circle me-1"></i>Sin Lote</span>
                         @endif
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-muted py-2">Propietario:</td>
+                    <td class="text-muted py-2">Propietario Titular:</td>
                     <td class="fw-semibold py-2">
                         @if($payment->owner)
-                            <a href="{{ route('admin.owners.show', $payment->owner) }}" class="text-success text-decoration-none">
+                            <a href="{{ route('admin.owners.show', $payment->owner) }}" class="text-success text-decoration-none fw-bold">
                                 {{ $payment->owner->full_name }}
                             </a>
+                            @if($payment->owner->dni)
+                                <small class="text-muted ms-2">(DNI: {{ $payment->owner->dni }})</small>
+                            @endif
                         @else
                             <span class="text-muted">No Identificado</span>
                         @endif
                     </td>
                 </tr>
+                @if($payment->user)
+                <tr>
+                    <td class="text-muted py-2">Informado por (Vecino):</td>
+                    <td class="fw-semibold py-2">
+                        <span class="badge bg-secondary-subtle text-secondary badge-ios me-1">{{ $payment->user->relationship_type ?? 'Vecino' }}</span>
+                        <strong>{{ $payment->user->full_name }}</strong>
+                        <small class="text-muted ms-1">({{ $payment->user->email }})</small>
+                    </td>
+                </tr>
+                @endif
                 <tr>
                     <td class="text-muted py-2">Importe Declarado:</td>
                     <td class="fw-bold py-2 text-success fs-5">${{ number_format($payment->amount, 2, ',', '.') }}</td>
@@ -103,23 +119,41 @@
             <h5 class="fw-bold mb-4"><i class="bi bi-paperclip text-success me-2"></i>Comprobante Adjunto</h5>
             
             @forelse($payment->receipts as $receipt)
+                @php
+                    $ext = strtolower(pathinfo($receipt->file_name ?: $receipt->file_path, PATHINFO_EXTENSION));
+                    $isImage = in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']);
+                    $fileUrl = asset('storage/' . $receipt->file_path);
+                @endphp
                 <div class="bg-body-secondary p-3 rounded-4 d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h6 class="fw-bold m-0" style="font-size: 0.9rem;">{{ $receipt->file_name }}</h6>
-                        <small class="text-muted">{{ number_format($receipt->file_size / 1024, 1) }} KB</small>
+                        <h6 class="fw-bold m-0" style="font-size: 0.9rem;">{{ $receipt->file_name ?? 'Comprobante de Pago' }}</h6>
+                        <small class="text-muted">{{ number_format(($receipt->file_size ?: 0) / 1024, 1) }} KB</small>
                     </div>
-                    <a href="{{ asset('storage/' . $receipt->file_path) }}" target="_blank" class="btn btn-sm btn-ios btn-ios-secondary">
-                        <i class="bi bi-box-arrow-up-right"></i> Abrir
+                    <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-ios btn-ios-primary">
+                        <i class="bi bi-box-arrow-up-right me-1"></i> Abrir en Pantalla Completa
                     </a>
                 </div>
                 
-                <div class="border-ios p-2 rounded-4 text-center bg-white" style="max-height: 400px; overflow: hidden;">
-                    @if(in_array(strtolower(pathinfo($receipt->file_name, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']))
-                        <img src="{{ asset('storage/' . $receipt->file_path) }}" class="img-fluid rounded-3" style="max-height: 380px; object-fit: contain;" alt="Comprobante">
+                <div class="border-ios p-2 rounded-4 text-center bg-body-tertiary" style="min-height: 200px;">
+                    @if($isImage)
+                        <a href="{{ $fileUrl }}" target="_blank" title="Click para ver en tamaño completo">
+                            <img src="{{ $fileUrl }}" class="img-fluid rounded-3 shadow-sm" style="max-height: 480px; object-fit: contain; cursor: zoom-in;" alt="Comprobante de Pago">
+                        </a>
+                    @elseif($ext === 'pdf')
+                        <div class="py-4 text-center">
+                            <i class="bi bi-file-earmark-pdf fs-1 d-block mb-3 text-danger"></i>
+                            <h6 class="fw-semibold">Documento PDF Adjunto</h6>
+                            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-danger mt-2">
+                                <i class="bi bi-file-pdf me-1"></i> Ver / Descargar PDF
+                            </a>
+                        </div>
                     @else
-                        <div class="py-5 text-muted">
-                            <i class="bi bi-file-earmark-pdf fs-1 d-block mb-2 text-danger"></i>
-                            <span>Este archivo no es una imagen. Abre el archivo en una pestaña nueva para visualizarlo.</span>
+                        <div class="py-4 text-muted text-center">
+                            <i class="bi bi-file-earmark-arrow-down fs-1 d-block mb-2 text-primary"></i>
+                            <span>Archivo adjunto disponible.</span>
+                            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary d-block mx-auto mt-2" style="max-width: 200px;">
+                                <i class="bi bi-download me-1"></i> Descargar Archivo
+                            </a>
                         </div>
                     @endif
                 </div>

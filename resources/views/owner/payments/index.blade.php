@@ -42,6 +42,15 @@
                     @endif
                 </div>
 
+                @if($pay->receipts && $pay->receipts->count() > 0)
+                    <div class="mt-2 pt-2 border-top border-ios d-flex align-items-center justify-content-between">
+                        <small class="text-muted"><i class="bi bi-paperclip me-1"></i>Comprobante adjunto</small>
+                        <a href="{{ asset('storage/' . $pay->receipts->first()->file_path) }}" target="_blank" class="btn btn-sm btn-outline-success py-0 px-2 rounded-pill" style="font-size: 0.75rem;">
+                            <i class="bi bi-eye me-1"></i>Ver Comprobante
+                        </a>
+                    </div>
+                @endif
+
                 <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-ios">
                     <span class="text-muted" style="font-size: 0.8rem;">Monto Reportado:</span>
                     <strong class="text-success" style="font-size: 1.1rem;">
