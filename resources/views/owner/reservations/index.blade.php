@@ -49,7 +49,7 @@
 
     <!-- My Reservations Title -->
     <div class="col-12 mt-4">
-        <h6 class="fw-bold text-muted mb-2" style="font-size: 0.8rem; letter-spacing: 0.5px; text-uppercase: true;">Mis Reservas en Lote {{ $activeLot ? $activeLot->number : 'N/C' }}</h6>
+        <h6 class="fw-bold text-muted mb-2" style="font-size: 0.8rem; letter-spacing: 0.5px; text-uppercase: true;">Mis Reservas {{ $activeLot ? 'en Lote ' . $activeLot->number : '' }}</h6>
     </div>
 
     <!-- Reservations list loop -->
@@ -58,8 +58,8 @@
             <div class="ios-card bg-body-tertiary p-3 mb-1">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
-                        <h6 class="fw-bold m-0" style="font-size: 1rem;">{{ $res->commonArea->name }}</h6>
-                        <small class="text-muted" style="font-size: 0.75rem;">Fecha: {{ $res->reservation_date->format('d/m/Y') }}</small>
+                        <h6 class="fw-bold m-0" style="font-size: 1rem;">{{ $res->commonArea->name ?? 'Espacio Común' }}</h6>
+                        <small class="text-muted" style="font-size: 0.75rem;">Fecha: {{ $res->reservation_date ? $res->reservation_date->format('d/m/Y') : '-' }}</small>
                     </div>
                     @if($res->status === 'pending')
                         <span class="badge bg-warning text-dark badge-ios">Pendiente</span>
@@ -83,7 +83,7 @@
                 </div>
 
                 <!-- Cancel action if future -->
-                @if($res->reservation_date->isAfter(now()->subDay()) && in_array($res->status, ['pending', 'confirmed']))
+                @if($res->reservation_date && $res->reservation_date->isAfter(now()->subDay()) && in_array($res->status, ['pending', 'confirmed']))
                     <div class="d-flex justify-content-end gap-2 mt-3 pt-2 border-top border-ios">
                         <form action="{{ route('owner.reservations.cancel', $res) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta reserva?');">
                             @csrf
@@ -99,14 +99,16 @@
         <div class="col-12 text-center py-5">
             <div class="ios-card">
                 <i class="bi bi-calendar-x text-muted fs-1 d-block mb-3"></i>
-                <span class="text-muted" style="font-size: 0.85rem;">Aún no posees reservas registradas para este lote.</span>
+                <span class="text-muted" style="font-size: 0.85rem;">Aún no posees reservas registradas.</span>
             </div>
         </div>
     @endforelse
 
     <!-- Pagination -->
-    <div class="col-12 mt-3">
-        {{ $reservations->links() }}
-    </div>
+    @if(method_exists($reservations, 'hasPages') && $reservations->hasPages())
+        <div class="col-12 mt-3">
+            {{ $reservations->links() }}
+        </div>
+    @endif
 </div>
 @endsection

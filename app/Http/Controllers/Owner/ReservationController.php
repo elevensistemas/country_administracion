@@ -20,25 +20,25 @@ class ReservationController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->unique('id');
+        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->filter()->unique('id');
         $activeLotId = session('active_lot_id');
-        $activeLot = $lots->firstWhere('id', $activeLotId);
+        $activeLot = $lots->firstWhere('id', $activeLotId) ?: $lots->first();
 
-        if (!$activeLot) {
-            $activeLot = $lots->first();
-            $activeLotId = $activeLot?->id;
-            session(['active_lot_id' => $activeLotId]);
+        if ($activeLot && $activeLotId !== $activeLot->id) {
+            session(['active_lot_id' => $activeLot->id]);
         }
 
-        // List their reservations on active lot
-        $reservations = [];
+        // List their reservations on active lot or by user
+        $query = Reservation::with(['commonArea', 'lot']);
         if ($activeLot) {
-            $reservations = Reservation::where('lot_id', $activeLot->id)
-                ->with(['commonArea'])
-                ->orderBy('reservation_date', 'desc')
-                ->orderBy('start_time', 'desc')
-                ->paginate(10);
+            $query->where('lot_id', $activeLot->id);
+        } else {
+            $query->where('user_id', $user->id);
         }
+
+        $reservations = $query->orderBy('reservation_date', 'desc')
+            ->orderBy('start_time', 'desc')
+            ->paginate(10);
 
         // Available common areas for booking
         $commonAreas = CommonArea::where('is_active', true)->orderBy('name')->get();
@@ -49,14 +49,12 @@ class ReservationController extends Controller
     public function create(Request $request, CommonArea $commonArea)
     {
         $user = Auth::user();
-        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->unique('id');
+        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->filter()->unique('id');
         $activeLotId = session('active_lot_id');
-        $activeLot = $lots->firstWhere('id', $activeLotId);
+        $activeLot = $lots->firstWhere('id', $activeLotId) ?: $lots->first();
 
-        if (!$activeLot) {
-            $activeLot = $lots->first();
-            $activeLotId = $activeLot?->id;
-            session(['active_lot_id' => $activeLotId]);
+        if ($activeLot && $activeLotId !== $activeLot->id) {
+            session(['active_lot_id' => $activeLot->id]);
         }
 
         // Date selection (defaults to tomorrow)
@@ -102,12 +100,12 @@ class ReservationController extends Controller
         ]);
 
         $user = Auth::user();
-        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->unique('id');
+        $lots = $user->functionalUnits->map(fn($u) => $u->lot)->filter()->unique('id');
         $activeLotId = session('active_lot_id');
-        $activeLot = $lots->firstWhere('id', $activeLotId);
+        $activeLot = $lots->firstWhere('id', $activeLotId) ?: $lots->first();
 
         if (!$activeLot) {
-            return redirect()->back()->with('error', 'Lote no seleccionado.');
+            return redirect()->back()->with('error', 'No posees un lote seleccionado para realizar la reserva.');
         }
 
         $commonArea = CommonArea::findOrFail($request->common_area_id);
