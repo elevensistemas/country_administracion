@@ -134,19 +134,42 @@ class PaymentController extends Controller
             $evCat = \App\Models\LotHistoryCategory::where('name', 'finance')->first();
 
             \App\Models\LotHistoryEvent::create([
-                'lot_id' => $unit->lot_id,
+                'lot_id' => $activeLot->id,
                 'functional_unit_id' => $unit->id,
                 'event_type_id' => $evType ? $evType->id : 1,
                 'category_id' => $evCat ? $evCat->id : 1,
                 'related_model_type' => Payment::class,
                 'related_model_id' => $payment->id,
-                'owner_id' => $owner ? $owner->id : null,
-                'tenant_id' => $unit->lot->current_tenant_id,
+                'owner_id' => $ownerId,
+                'tenant_id' => $activeLot->current_tenant_id,
                 'user_id' => $user->id,
                 'title' => "Pago Informado por Vecino",
                 'description' => "Se informó pago de $ " . number_format($request->amount, 2, ',', '.') . " mediante {$request->payment_method}. Op N°: {$request->operation_number}.",
                 'event_date' => now(),
                 'visibility' => 'public',
+            ]);
+
+            // Notify all admin, superadmin, accounting, and operator staff
+            $staffUsers = \App\Models\User::whereIn('relationship_type', ['admin', 'superadmin', 'accounting', 'operator'])->get();
+            $amountFmt = number_format($request->amount, 2, ',', '.');
+
+            foreach ($staffUsers as $staff) {
+                \App\Models\Notification::create([
+                    'user_id' => $staff->id,
+                    'title' => "Nuevo Pago - Lote {$activeLot->number}",
+                    'message' => "{$user->full_name} informó un pago de $ {$amountFmt} (Op: {$request->operation_number}).",
+                    'type' => 'payment',
+                    'link' => route('admin.payments.show', $payment->id),
+                ]);
+            }
+
+            // Also create confirmation notification for the reporting resident / owner
+            \App\Models\Notification::create([
+                'user_id' => $user->id,
+                'title' => "Comprobante de Pago Recibido",
+                'message' => "Tu pago de $ {$amountFmt} (Lote {$activeLot->number}) fue registrado y está pendiente de validación contable.",
+                'type' => 'payment',
+                'link' => route('owner.payments.history'),
             ]);
         });
 

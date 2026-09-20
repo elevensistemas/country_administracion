@@ -220,6 +220,18 @@ class PaymentController extends Controller
                     'manual',
                     $request->input('notes')
                 );
+
+                // Notify reporting user of successful reconciliation
+                if ($payment->user_id) {
+                    $lotNumber = $payment->lot ? $payment->lot->number : ($unit->lot ? $unit->lot->number : '');
+                    \App\Models\Notification::create([
+                        'user_id' => $payment->user_id,
+                        'title' => "Pago Aprobado y Conciliado",
+                        'message' => "Tu pago de $ " . number_format($payment->amount, 2, ',', '.') . " (Lote {$lotNumber}) ha sido aprobado e imputado a tu cuenta corriente.",
+                        'type' => 'payment',
+                        'link' => route('owner.accounting.index'),
+                    ]);
+                }
             });
 
             return redirect()->route('admin.payments.index')->with('success', 'Pago conciliado e imputado en la cuenta corriente.');
@@ -288,6 +300,18 @@ class PaymentController extends Controller
                         'description' => "Se rechazó el pago informado de $ " . number_format($payment->amount, 2, ',', '.') . " (Operación N°: {$payment->operation_number}). Motivo: " . $request->notes,
                         'event_date' => now(),
                         'visibility' => 'public',
+                    ]);
+                }
+
+                // Notify reporting user of rejection
+                if ($payment->user_id) {
+                    $lotNumber = $payment->lot ? $payment->lot->number : '';
+                    \App\Models\Notification::create([
+                        'user_id' => $payment->user_id,
+                        'title' => "Pago Observado / Rechazado",
+                        'message' => "Tu pago de $ " . number_format($payment->amount, 2, ',', '.') . " (Lote {$lotNumber}) no pudo ser validado. Motivo: {$request->notes}",
+                        'type' => 'payment',
+                        'link' => route('owner.payments.history'),
                     ]);
                 }
             });

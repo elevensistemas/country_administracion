@@ -123,6 +123,15 @@ class TicketController extends Controller
                     'link' => route('admin.tickets.show', $ticket->id),
                 ]);
             }
+
+            // Confirmation notification for the owner user
+            \App\Models\Notification::create([
+                'user_id' => $user->id,
+                'title' => "Reclamo #{$ticket->id} Registrado",
+                'message' => "Tu reclamo \"{$ticket->title}\" (Lote {$lotNumber}) fue recibido por la administración.",
+                'type' => 'ticket',
+                'link' => route('owner.tickets.show', $ticket->id),
+            ]);
         });
 
         return redirect()->route('owner.tickets.index')->with('success', 'Tu ticket ha sido creado correctamente y un operador se pondrá en contacto a la brevedad.');
