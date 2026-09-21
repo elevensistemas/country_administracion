@@ -34,14 +34,18 @@
                         <span class="text-muted">Expensa del Mes:</span>
                         <span class="fw-bold text-dark">${{ number_format($latestExpense->capital_amount, 2, ',', '.') }}</span>
                     </div>
-                    <div class="d-flex justify-content-between py-1 border-bottom border-ios" style="font-size: 0.88rem;">
-                        <span class="text-muted">Saldo Anterior:</span>
-                        <span class="fw-bold text-muted">${{ number_format($latestExpense->previous_balance, 2, ',', '.') }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between py-1 border-bottom border-ios" style="font-size: 0.88rem;">
-                        <span class="text-muted">Intereses por Mora:</span>
-                        <span class="fw-bold text-danger">${{ number_format($latestExpense->interest_amount, 2, ',', '.') }}</span>
-                    </div>
+                    @if($latestExpense->previous_balance != 0)
+                        <div class="d-flex justify-content-between py-1 border-bottom border-ios" style="font-size: 0.88rem;">
+                            <span class="text-muted">{{ $latestExpense->previous_balance > 0 ? 'Saldo Anterior Impago:' : 'Saldo a Favor Anterior:' }}</span>
+                            <span class="fw-bold {{ $latestExpense->previous_balance > 0 ? 'text-muted' : 'text-success' }}">${{ number_format(abs($latestExpense->previous_balance), 2, ',', '.') }}</span>
+                        </div>
+                    @endif
+                    @if($latestExpense->interest_amount > 0)
+                        <div class="d-flex justify-content-between py-1 border-bottom border-ios" style="font-size: 0.88rem;">
+                            <span class="text-muted">Intereses por Mora:</span>
+                            <span class="fw-bold text-danger">${{ number_format($latestExpense->interest_amount, 2, ',', '.') }}</span>
+                        </div>
+                    @endif
                     @if($latestExpense->adjustments_amount != 0)
                         <div class="d-flex justify-content-between py-1 border-bottom border-ios" style="font-size: 0.88rem;">
                             <span class="text-muted">Ajustes / Otros Cargos:</span>
@@ -49,14 +53,14 @@
                         </div>
                     @endif
                     @if($latestExpense->discount_amount > 0)
-                        <div class="d-flex justify-content-between py-1 border-bottom border-ios" style="font-size: 0.88rem;">
-                            <span class="text-muted">Bonificaciones / Descuentos:</span>
-                            <span class="fw-bold text-success">-${{ number_format($latestExpense->discount_amount, 2, ',', '.') }}</span>
+                        <div class="d-flex justify-content-between py-2 border-bottom border-ios bg-success-subtle bg-opacity-25 px-2 rounded-2 my-1" style="font-size: 0.9rem;">
+                            <span class="text-success fw-bold"><i class="bi bi-tag-fill me-1"></i> Pronto Pago (Hasta el 10/09):</span>
+                            <span class="fw-bold text-success">${{ number_format($latestExpense->total_amount - $latestExpense->discount_amount, 2, ',', '.') }}</span>
                         </div>
                     @endif
                     
                     <div class="d-flex justify-content-between pt-2 fw-bold" style="font-size: 1.15rem;">
-                        <span class="text-success">TOTAL ADEUDADO:</span>
+                        <span class="text-dark">TOTAL DESPUÉS DEL 10:</span>
                         <span class="text-danger">${{ number_format($latestExpense->total_amount, 2, ',', '.') }}</span>
                     </div>
                 </div>

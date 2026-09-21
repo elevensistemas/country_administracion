@@ -129,6 +129,20 @@ class ExpenseController extends Controller
      */
     public function downloadPdf(Expense $expense)
     {
+        if ($expense->attachment_path && file_exists(storage_path('app/public/' . $expense->attachment_path))) {
+            return response()->file(storage_path('app/public/' . $expense->attachment_path), [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="liquidacion_expensas_' . $expense->billingPeriod->period . '.pdf"'
+            ]);
+        }
+
+        if ($expense->attachment_path && file_exists(public_path('storage/' . $expense->attachment_path))) {
+            return response()->file(public_path('storage/' . $expense->attachment_path), [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="liquidacion_expensas_' . $expense->billingPeriod->period . '.pdf"'
+            ]);
+        }
+
         $expense->load(['billingPeriod', 'functionalUnit.lot.owner', 'items']);
         return view('admin.expenses.pdf', compact('expense'));
     }

@@ -40,12 +40,26 @@ class ExpenseController extends Controller
      */
     public function downloadPdf(Expense $expense)
     {
-        // Security check: must belong to user
+        // Security check: must belong to user or user is admin
         $user = auth()->user();
         $associatedUnits = $user->functionalUnits->pluck('id')->toArray();
 
-        if (!in_array($expense->functional_unit_id, $associatedUnits)) {
+        if ($user->role !== 'admin' && !in_array($expense->functional_unit_id, $associatedUnits)) {
             abort(403, 'No tienes permiso para ver esta liquidación.');
+        }
+
+        if ($expense->attachment_path && file_exists(storage_path('app/public/' . $expense->attachment_path))) {
+            return response()->file(storage_path('app/public/' . $expense->attachment_path), [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="liquidacion_expensas_' . $expense->billingPeriod->period . '.pdf"'
+            ]);
+        }
+
+        if ($expense->attachment_path && file_exists(public_path('storage/' . $expense->attachment_path))) {
+            return response()->file(public_path('storage/' . $expense->attachment_path), [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="liquidacion_expensas_' . $expense->billingPeriod->period . '.pdf"'
+            ]);
         }
 
         $expense->load(['billingPeriod', 'functionalUnit.lot.owner', 'items']);
