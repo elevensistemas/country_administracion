@@ -187,6 +187,7 @@ Route::prefix('admin')
         Route::get('expenses/create-period', [\App\Http\Controllers\Admin\ExpenseController::class, 'createPeriod'])->name('expenses.create-period');
         Route::post('expenses/create-period', [\App\Http\Controllers\Admin\ExpenseController::class, 'storePeriod'])->name('expenses.store-period');
         Route::post('expenses/generate', [\App\Http\Controllers\Admin\ExpenseController::class, 'generate'])->name('expenses.generate');
+        Route::post('expenses/import-pdf', [\App\Http\Controllers\Admin\ExpenseController::class, 'importPdf'])->name('expenses.import-pdf');
         Route::post('expenses/{expense}/publish', [\App\Http\Controllers\Admin\ExpenseController::class, 'publish'])->name('expenses.publish');
         Route::get('expenses/{expense}/pdf', [\App\Http\Controllers\Admin\ExpenseController::class, 'downloadPdf'])->name('expenses.pdf');
 

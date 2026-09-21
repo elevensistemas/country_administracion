@@ -7,6 +7,25 @@
 <div class="row">
     <!-- Billing Periods Panel (Left) -->
     <div class="col-lg-4 mb-4">
+        <!-- Action Card for PDF Import -->
+        <div class="ios-card mb-4 bg-primary text-white border-0 shadow-sm" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="p-3 bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center">
+                    <i class="bi bi-file-earmark-pdf-fill fs-3 text-white"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold m-0 text-white">Importar Liquidación</h6>
+                    <small class="text-white-50">Carga automática del Boletín mensual</small>
+                </div>
+            </div>
+            <p class="text-white-50 mb-3" style="font-size: 0.82rem; line-height: 1.4;">
+                Sube el PDF oficial emitido por la administración para procesar automáticamente los 131 lotes, saldos, mora y adjuntar el boletín.
+            </p>
+            <button type="button" class="btn btn-light w-100 fw-bold py-2 shadow-sm rounded-3 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#importPdfModal">
+                <i class="bi bi-cloud-arrow-up-fill text-primary"></i> Subir PDF del Mes
+            </button>
+        </div>
+
         <div class="ios-card">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h6 class="fw-bold m-0"><i class="bi bi-calendar3 text-success me-2"></i>Períodos Facturados</h6>
@@ -210,6 +229,53 @@
             <div class="mt-4">
                 {{ $expenses->links() }}
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Importar PDF Liquidación -->
+<div class="modal fade" id="importPdfModal" tabindex="-1" aria-labelledby="importPdfModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header border-bottom border-ios p-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                        <i class="bi bi-file-earmark-pdf-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold m-0" id="importPdfModalLabel">Importar Liquidación (PDF)</h5>
+                        <small class="text-muted">Procesamiento automático de los 131 lotes y boletín</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('admin.expenses.import-pdf') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Período de Liquidación</label>
+                        <input type="month" name="period" class="form-control form-control-ios" required value="{{ date('Y-m') }}">
+                        <small class="text-muted">Indique el mes y año liquidado (Ej: 2026-09).</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Archivo PDF Oficial</label>
+                        <input type="file" name="pdf_file" class="form-control form-control-ios" accept="application/pdf" required>
+                        <small class="text-muted">Seleccione el PDF emitido por la administración que contiene el boletín y las planillas de liquidación.</small>
+                    </div>
+
+                    <div class="alert alert-info border-0 rounded-3 mb-0" style="font-size: 0.85rem;">
+                        <i class="bi bi-info-circle-fill me-1"></i>
+                        <strong>Procesamiento Inteligente:</strong> El sistema extrae automáticamente el saldo anterior, intereses por mora, expensas ordinarias, canon de obra, pronto pago y total a pagar de cada lote (UF 1 al 131), vinculando además el boletín en PDF para descarga de los vecinos.
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-ios p-3 bg-body-tertiary">
+                    <button type="button" class="btn btn-ios btn-ios-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-ios btn-ios-primary text-white">
+                        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Iniciar Importación
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

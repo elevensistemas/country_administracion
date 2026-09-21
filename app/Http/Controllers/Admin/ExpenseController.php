@@ -146,4 +146,83 @@ class ExpenseController extends Controller
         $expense->load(['billingPeriod', 'functionalUnit.lot.owner', 'items']);
         return view('admin.expenses.pdf', compact('expense'));
     }
+
+    /**
+     * Upload and import monthly Expense PDF liquidation and bulletin.
+     */
+    public function importPdf(Request $request, \App\Services\PdfExpenseParserService $parserService)
+    {
+        $request->validate([
+            'pdf_file' => 'required|file|mimes:pdf|max:30720',
+            'period' => 'required|string',
+        ], [
+            'pdf_file.required' => 'Debe seleccionar el archivo PDF oficial de liquidación.',
+            'pdf_file.mimes' => 'El archivo debe ser un documento PDF válido.',
+            'period.required' => 'Debe indicar el período a liquidar (ej: 2026-08).',
+        ]);
+
+        $file = $request->file('pdf_file');
+        $periodInput = trim($request->input('period'));
+        
+        // Normalize period to YYYY-MM
+        if (preg_match('/^(\d{4})-(\d{2})$/', $periodInput, $pm)) {
+            $periodStr = $periodInput;
+            $year = intval($pm[1]);
+            $month = intval($pm[2]);
+        } elseif (preg_match('/^(\d{2})[-\/](\d{4})$/', $periodInput, $pm)) {
+            $periodStr = $pm[2] . '-' . $pm[1];
+            $year = intval($pm[2]);
+            $month = intval($pm[1]);
+        } else {
+            return back()->with('error', 'El formato del período debe ser AAAA-MM (Ej: 2026-09).');
+        }
+
+        $startDate = \Carbon\Carbon::create($year, $month, 1)->startOfMonth();
+        $endDate = \Carbon\Carbon::create($year, $month, 1)->endOfMonth();
+
+        $billingPeriod = BillingPeriod::firstOrCreate(
+            ['period' => $periodStr],
+            [
+                'start_date' => $startDate->toDateString(),
+                'end_date' => $endDate->toDateString(),
+                'status' => 'closed',
+            ]
+        );
+        $billingPeriod->status = 'closed';
+        $billingPeriod->save();
+
+        // Save PDF in storage
+        $fileName = 'boletin_y_liquidacion_' . str_replace('-', '_', $periodStr) . '.pdf';
+        $destinationDir = storage_path('app/public/expenses');
+        if (!file_exists($destinationDir)) {
+            mkdir($destinationDir, 0755, true);
+        }
+        $file->move($destinationDir, $fileName);
+        $relativePdfPath = 'expenses/' . $fileName;
+
+        // Copy to public/storage
+        $pubDir = public_path('storage/expenses');
+        if (!file_exists($pubDir)) {
+            mkdir($pubDir, 0755, true);
+        }
+        @copy($destinationDir . '/' . $fileName, $pubDir . '/' . $fileName);
+
+        $fullPdfPath = $destinationDir . '/' . $fileName;
+
+        try {
+            $rows = $parserService->parsePdf($fullPdfPath);
+
+            if (empty($rows)) {
+                return back()->with('error', 'No se pudieron extraer los datos de la tabla de liquidación del PDF. Verifique que el archivo sea el boletín oficial con las páginas de liquidación.');
+            }
+
+            $importedCount = $parserService->importExpenses($billingPeriod, $rows, $relativePdfPath);
+            $totalSum = array_sum(array_column($rows, 'total_a_pagar'));
+
+            return redirect()->route('admin.expenses.index', ['billing_period_id' => $billingPeriod->id])
+                ->with('success', "¡Liquidación importada con éxito! Se procesaron {$importedCount} lotes para el período {$periodStr}. Monto total: $ " . number_format($totalSum, 2, ',', '.'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al procesar el archivo PDF: ' . $e->getMessage());
+        }
+    }
 }
