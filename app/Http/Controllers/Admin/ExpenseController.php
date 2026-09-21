@@ -24,6 +24,7 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
         $periods = BillingPeriod::orderBy('period', 'desc')->get();
+        $lots = \App\Models\Lot::orderBy('number', 'asc')->get(['id', 'number', 'code']);
         
         $query = Expense::with(['billingPeriod', 'functionalUnit.lot.owner']);
 
@@ -35,9 +36,30 @@ class ExpenseController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $expenses = $query->orderBy('id', 'desc')->paginate(15)->withQueryString();
+        if ($request->filled('lot_id')) {
+            $lotId = $request->input('lot_id');
+            $query->whereHas('functionalUnit', function ($q) use ($lotId) {
+                $q->where('lot_id', $lotId);
+            });
+        }
 
-        return view('admin.expenses.index', compact('periods', 'expenses'));
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+            $query->whereHas('functionalUnit.lot', function ($q) use ($search) {
+                $q->where('number', $search)
+                  ->orWhere('number', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%")
+                  ->orWhereHas('owner', function ($oq) use ($search) {
+                      $oq->where('name', 'like', "%{$search}%")
+                         ->orWhere('last_name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $expenses = $query->orderBy('id', 'desc')->paginate(25)->withQueryString();
+
+        return view('admin.expenses.index', compact('periods', 'lots', 'expenses'));
     }
 
     /**

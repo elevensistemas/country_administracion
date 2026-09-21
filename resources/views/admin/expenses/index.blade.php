@@ -79,8 +79,17 @@
     <div class="col-lg-8">
         <!-- Filters -->
         <div class="ios-card mb-4">
-            <form method="GET" action="{{ route('admin.expenses.index') }}" class="row g-3 align-items-center">
-                <div class="col-md-5">
+            <form method="GET" action="{{ route('admin.expenses.index') }}" class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-radius: 12px 0 0 12px; border-color: var(--ios-border);">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control form-control-ios border-start-0" style="border-radius: 0 12px 12px 0;" placeholder="Buscar lote (ej: 14) o vecino..." value="{{ request('search') }}">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
                     <select name="billing_period_id" class="form-select form-control-ios" onchange="this.form.submit()">
                         <option value="">Todos los Períodos</option>
                         @foreach($periods as $p)
@@ -91,7 +100,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <select name="status" class="form-select form-control-ios" onchange="this.form.submit()">
                         <option value="">Todos los Estados</option>
                         <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Borrador</option>
@@ -102,8 +111,15 @@
                     </select>
                 </div>
 
-                <div class="col-md-3 d-grid">
-                    <a href="{{ route('admin.expenses.index') }}" class="btn btn-ios btn-ios-secondary">Limpiar Filtros</a>
+                <div class="col-md-2 d-flex gap-1">
+                    <button type="submit" class="btn btn-ios btn-ios-primary flex-fill" title="Filtrar">
+                        <i class="bi bi-funnel-fill"></i> Filtrar
+                    </button>
+                    @if(request()->hasAny(['search', 'billing_period_id', 'status', 'lot_id']))
+                        <a href="{{ route('admin.expenses.index') }}" class="btn btn-ios btn-ios-secondary" title="Limpiar Filtros">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                    @endif
                 </div>
             </form>
         </div>
