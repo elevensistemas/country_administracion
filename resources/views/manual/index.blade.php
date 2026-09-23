@@ -463,7 +463,7 @@
                                         <li><strong>Importe Transferido ($):</strong> Monto exacto en pesos transferido.</li>
                                         <li><strong>Fecha del Pago:</strong> Día en que se realizó la operación bancaria.</li>
                                         <li><strong>Medio de Pago:</strong> Selección entre <em>Transferencia Bancaria</em>, <em>Depósito Bancario</em> u <em>Otro Medio</em>.</li>
-                                        <li><strong>Banco de Destino:</strong> Cuenta bancaria a la que se transfirió (ej. Banco Galicia o Banco Nación).</li>
+                                        <li><strong>Banco de Destino:</strong> Cuenta bancaria a la que se transfirió (Banco Supervielle).</li>
                                         <li><strong>N° de Comprobante / Referencia:</strong> Código o número de transacción bancaria.</li>
                                         <li><strong>Adjuntar Comprobante:</strong> Archivo digital (PDF, JPG o PNG de hasta 5MB).</li>
                                         <li><strong>Observaciones:</strong> Campo opcional para notas aclaratorias.</li>

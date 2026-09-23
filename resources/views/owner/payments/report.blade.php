@@ -56,8 +56,7 @@
                     <div class="col-md-6">
                         <label for="bank" class="form-label fw-semibold" style="font-size: 0.85rem;">Banco de Destino</label>
                         <select name="bank" id="bank" class="form-select form-control-ios @error('bank') is-invalid @enderror" required>
-                            <option value="Banco Galicia" {{ old('bank') === 'Banco Galicia' ? 'selected' : '' }}>Banco Galicia (Cuenta Consorcio)</option>
-                            <option value="Banco Nación" {{ old('bank') === 'Banco Nación' ? 'selected' : '' }}>Banco Nación (Cuenta Reserva)</option>
+                            <option value="Banco Supervielle" {{ old('bank', 'Banco Supervielle') === 'Banco Supervielle' ? 'selected' : '' }}>Banco Supervielle</option>
                         </select>
                         @error('bank')
                             <span class="invalid-feedback">{{ $message }}</span>
