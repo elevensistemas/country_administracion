@@ -14,20 +14,19 @@ class DocumentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Document::where('status', 'active')
-            ->where('is_public', true) // Only public documents for owner portal!
+        $query = Document::where('is_archived', false)
+            ->whereIn('visibility', ['public', 'owners_only'])
             ->with(['category', 'versions']);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%")
+                $q->where('name', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
-        $documents = $query->orderBy('title')->paginate(12)->withQueryString();
+        $documents = $query->orderBy('name')->paginate(12)->withQueryString();
 
         return view('owner.documents.index', compact('documents'));
     }
@@ -37,14 +36,17 @@ class DocumentController extends Controller
      */
     public function downloadVersion(DocumentVersion $version)
     {
-        // Security check: document must be public
         $doc = $version->document;
-        if ($doc->status !== 'active' || !$doc->is_public) {
+        if ($doc->is_archived || !in_array($doc->visibility, ['public', 'owners_only'])) {
             abort(403, 'No tienes permiso para descargar este archivo.');
         }
 
         $path = storage_path('app/public/' . $version->file_path);
         
+        if (!file_exists($path)) {
+            $path = public_path('storage/' . $version->file_path);
+        }
+
         if (!file_exists($path)) {
             abort(404, 'El archivo solicitado no existe.');
         }

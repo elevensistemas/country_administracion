@@ -398,6 +398,36 @@
                 <section id="owner-dashboard" class="glass-card p-4 p-md-5 mb-4">
                     <h3 class="section-title"><i class="bi bi-phone-fill text-primary me-2"></i>2. Manual del Propietario / Residente (Mi Portal)</h3>
 
+                    <!-- Test Resident Box & Supervielle Info -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 small">
+                                <div class="fw-bold text-success mb-2 d-flex align-items-center">
+                                    <i class="bi bi-person-check-fill me-2 fs-5"></i> Perfil de Propietario de Prueba
+                                </div>
+                                <ul class="list-unstyled mb-0 text-muted">
+                                    <li><strong>Residente:</strong> Ana Santora (Lote 14 - Manzana A)</li>
+                                    <li><strong>Email de Acceso:</strong> <code class="text-dark">s.ana@laranita.com</code></li>
+                                    <li><strong>Clave Provisoria:</strong> <code class="text-dark">password</code></li>
+                                    <li><strong>Saldo Septiembre 2026:</strong> $785.107,14 (1° Vto) / $853.651,14 (2° Vto)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-3 small">
+                                <div class="fw-bold text-primary mb-2 d-flex align-items-center">
+                                    <i class="bi bi-bank2 me-2 fs-5"></i> Cuenta Oficial para Pagos
+                                </div>
+                                <ul class="list-unstyled mb-0 text-muted">
+                                    <li><strong>Banco:</strong> Banco Supervielle (Único receptor)</li>
+                                    <li><strong>Titular:</strong> CLUB DE CAMPO LA RANITA S.A</li>
+                                    <li><strong>CUIT:</strong> 30-70085295-0</li>
+                                    <li><strong>CBU:</strong> <code class="text-dark">0270017510000190960011</code> | <strong>Cta Cte:</strong> 017-19096/001</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Visual Real Screens Card -->
                     <div class="p-4 bg-light rounded-4 border text-center mb-4">
                         <div class="row align-items-center g-3">
