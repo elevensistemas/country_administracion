@@ -227,6 +227,8 @@ Route::prefix('admin')
         Route::post('documents/{document}/version', [\App\Http\Controllers\Admin\DocumentController::class, 'storeVersion'])->name('documents.version');
         Route::get('documents/versions/{version}/download', [\App\Http\Controllers\Admin\DocumentController::class, 'downloadVersion'])->name('documents.download-version');
         Route::post('documents/{document}/archive', [\App\Http\Controllers\Admin\DocumentController::class, 'archive'])->name('documents.archive');
+        Route::post('documents/{document}/unarchive', [\App\Http\Controllers\Admin\DocumentController::class, 'unarchive'])->name('documents.unarchive');
+        Route::delete('documents/{document}', [\App\Http\Controllers\Admin\DocumentController::class, 'destroy'])->name('documents.destroy');
 
         // Adoption Module (Adopción de Usuarios)
         Route::get('adoption', [\App\Http\Controllers\Admin\AdoptionController::class, 'index'])->name('adoption.index');
