@@ -9,6 +9,7 @@ use App\Models\Notification;
 use App\Mail\NewsPublishedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class NewsController extends Controller
@@ -32,7 +33,7 @@ class NewsController extends Controller
             });
         }
 
-        $news = $query->orderBy('published_at', 'desc')->paginate(10)->withQueryString();
+        $news = $query->orderByRaw('COALESCE(published_at, publish_date, created_at) DESC')->paginate(10)->withQueryString();
 
         return view('admin.news.index', compact('news'));
     }
@@ -57,15 +58,27 @@ class NewsController extends Controller
             'status' => 'required|string|in:draft,published,archived',
             'visibility' => 'required|string|in:public,internal',
             'published_at' => 'nullable|date',
+            'file' => 'nullable|file|max:25600',
+            'image' => 'nullable|image|max:10240',
         ]);
 
-        $data = $request->except(['notify_portal', 'send_email']);
+        $data = $request->except(['notify_portal', 'send_email', 'file', 'image']);
         $data['user_id'] = auth()->id();
         $data['is_published'] = ($request->status === 'published');
         
         if ($request->status === 'published') {
             $data['published_at'] = $request->filled('published_at') ? $request->published_at : now();
             $data['publish_date'] = $data['published_at'];
+        }
+
+        // Upload attachment file
+        if ($request->hasFile('file')) {
+            $data['file_path'] = $request->file('file')->store('news', 'public');
+        }
+
+        // Upload cover image
+        if ($request->hasFile('image')) {
+            $data['image_path'] = $request->file('image')->store('news_images', 'public');
         }
 
         $news = News::create($data);
@@ -107,11 +120,13 @@ class NewsController extends Controller
             'status' => 'required|string|in:draft,published,archived',
             'visibility' => 'required|string|in:public,internal',
             'published_at' => 'nullable|date',
+            'file' => 'nullable|file|max:25600',
+            'image' => 'nullable|image|max:10240',
         ]);
 
         $wasPublished = ($news->status === 'published');
 
-        $data = $request->except(['notify_portal', 'send_email']);
+        $data = $request->except(['notify_portal', 'send_email', 'file', 'image', 'remove_file', 'remove_image']);
         $data['is_published'] = ($request->status === 'published');
         
         if ($request->status === 'published') {
@@ -119,6 +134,32 @@ class NewsController extends Controller
                 $data['published_at'] = $request->filled('published_at') ? $request->published_at : now();
                 $data['publish_date'] = $data['published_at'];
             }
+        }
+
+        // Handle attachment file
+        if ($request->boolean('remove_file')) {
+            if ($news->file_path && Storage::disk('public')->exists($news->file_path)) {
+                Storage::disk('public')->delete($news->file_path);
+            }
+            $data['file_path'] = null;
+        } elseif ($request->hasFile('file')) {
+            if ($news->file_path && Storage::disk('public')->exists($news->file_path)) {
+                Storage::disk('public')->delete($news->file_path);
+            }
+            $data['file_path'] = $request->file('file')->store('news', 'public');
+        }
+
+        // Handle cover image
+        if ($request->boolean('remove_image')) {
+            if ($news->image_path && Storage::disk('public')->exists($news->image_path)) {
+                Storage::disk('public')->delete($news->image_path);
+            }
+            $data['image_path'] = null;
+        } elseif ($request->hasFile('image')) {
+            if ($news->image_path && Storage::disk('public')->exists($news->image_path)) {
+                Storage::disk('public')->delete($news->image_path);
+            }
+            $data['image_path'] = $request->file('image')->store('news_images', 'public');
         }
 
         $news->update($data);
@@ -142,6 +183,13 @@ class NewsController extends Controller
      */
     public function destroy(News $news)
     {
+        if ($news->file_path && Storage::disk('public')->exists($news->file_path)) {
+            Storage::disk('public')->delete($news->file_path);
+        }
+        if ($news->image_path && Storage::disk('public')->exists($news->image_path)) {
+            Storage::disk('public')->delete($news->image_path);
+        }
+
         $news->delete();
         return redirect()->route('admin.news.index')->with('success', 'Novedad eliminada correctamente.');
     }

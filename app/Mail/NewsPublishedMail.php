@@ -29,7 +29,21 @@ class NewsPublishedMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Nueva Novedad: ' . $this->news->title . ' - La Ranita')
-                    ->view('emails.news_published');
+        $mail = $this->subject('Nueva Novedad: ' . $this->news->title . ' - La Ranita')
+                     ->view('emails.news_published');
+
+        if (!empty($this->news->file_path)) {
+            $fullPath = storage_path('app/public/' . $this->news->file_path);
+            if (!file_exists($fullPath)) {
+                $fullPath = storage_path('app/' . $this->news->file_path);
+            }
+            if (file_exists($fullPath)) {
+                $mail->attach($fullPath, [
+                    'as' => basename($this->news->file_path),
+                ]);
+            }
+        }
+
+        return $mail;
     }
 }

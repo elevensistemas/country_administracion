@@ -73,7 +73,16 @@
             line-height: 1.6;
             color: #2c2c2e;
             white-space: pre-line;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
+        }
+        .attachment-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #166534;
         }
         .btn-wrapper {
             text-align: center;
@@ -128,6 +137,12 @@
         <div class="news-body">
             {{ $news->content }}
         </div>
+
+        @if($news->file_path)
+            <div class="attachment-box">
+                📎 <strong>Archivo adjunto incluido:</strong> {{ basename($news->file_path) }} (Se encuentra adjunto en este correo o disponible para descargar en el portal).
+            </div>
+        @endif
 
         <div class="btn-wrapper">
             <a href="{{ route('owner.news.show', $news->id ?? 1) }}" class="btn-primary" target="_blank">

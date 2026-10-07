@@ -14,10 +14,25 @@
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="badge bg-secondary-subtle text-secondary badge-ios">COMUNICADO</span>
-                            <small class="text-muted">{{ $n->published_at ? $n->published_at->format('d/m/Y') : '' }}</small>
+                            <small class="text-muted">{{ $n->published_at ? $n->published_at->format('d/m/Y') : ($n->created_at ? $n->created_at->format('d/m/Y') : '') }}</small>
                         </div>
+                        
+                        @if($n->image_path)
+                            <div class="mb-3">
+                                <img src="{{ asset('storage/' . $n->image_path) }}" alt="{{ $n->title }}" class="img-fluid rounded-3" style="max-height: 160px; width: 100%; object-fit: cover;">
+                            </div>
+                        @endif
+
                         <h5 class="fw-bold mb-2">{{ $n->title }}</h5>
-                        <p class="text-muted mb-4" style="font-size: 0.9rem; line-height: 1.5;">{{ $n->summary ?? Str::limit(strip_tags($n->content), 120) }}</p>
+                        <p class="text-muted mb-3" style="font-size: 0.9rem; line-height: 1.5;">{{ $n->summary ?? Str::limit(strip_tags($n->content), 120) }}</p>
+                        
+                        @if($n->file_path)
+                            <div class="mb-3">
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1" style="font-size: 0.75rem;">
+                                    <i class="bi bi-paperclip me-1"></i> Contiene archivo adjunto ({{ strtoupper(pathinfo($n->file_path, PATHINFO_EXTENSION)) }})
+                                </span>
+                            </div>
+                        @endif
                     </div>
                     <div class="d-grid">
                         <a href="{{ route('owner.news.show', $n) }}" class="btn btn-ios btn-ios-secondary">Leer Completo</a>

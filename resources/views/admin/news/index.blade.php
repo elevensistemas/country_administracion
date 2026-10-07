@@ -43,6 +43,7 @@
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">FECHA PUB.</th>
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">TITULO</th>
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">RESUMEN</th>
+                    <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">ADJUNTOS</th>
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">VISIBILIDAD</th>
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">ESTADO</th>
                     <th class="text-muted text-end" style="font-size: 0.85rem; font-weight: 600; width: 15%;">ACCIONES</th>
@@ -52,13 +53,30 @@
                 @forelse($news as $n)
                     <tr class="border-bottom border-ios">
                         <td style="font-size: 0.9rem;">
-                            {{ $n->published_at ? $n->published_at->format('d/m/Y H:i') : 'Programada' }}
+                            {{ $n->published_at ? $n->published_at->format('d/m/Y H:i') : ($n->created_at ? $n->created_at->format('d/m/Y H:i') : 'Programada') }}
                         </td>
                         <td>
                             <h6 class="fw-bold m-0" style="font-size: 0.95rem;">{{ $n->title }}</h6>
                         </td>
-                        <td class="text-muted text-truncate" style="font-size: 0.85rem; max-width: 300px;">
+                        <td class="text-muted text-truncate" style="font-size: 0.85rem; max-width: 250px;">
                             {{ $n->summary ?? 'Sin resumen' }}
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1 flex-wrap">
+                                @if($n->file_path)
+                                    <a href="{{ asset('storage/' . $n->file_path) }}" target="_blank" class="badge bg-primary-subtle text-primary border border-primary-subtle text-decoration-none" title="Descargar archivo adjunto">
+                                        <i class="bi bi-paperclip me-1"></i>{{ strtoupper(pathinfo($n->file_path, PATHINFO_EXTENSION)) }}
+                                    </a>
+                                @endif
+                                @if($n->image_path)
+                                    <a href="{{ asset('storage/' . $n->image_path) }}" target="_blank" class="badge bg-info-subtle text-info border border-info-subtle text-decoration-none" title="Ver imagen de portada">
+                                        <i class="bi bi-image me-1"></i>Img
+                                    </a>
+                                @endif
+                                @if(!$n->file_path && !$n->image_path)
+                                    <span class="text-muted" style="font-size: 0.8rem;">-</span>
+                                @endif
+                            </div>
                         </td>
                         <td>
                             @if($n->visibility === 'public')
@@ -96,9 +114,9 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5">
+                        <td colspan="7" class="text-center py-5">
                             <i class="bi bi-megaphone text-muted fs-1 d-block mb-3"></i>
-                            <span class="text-muted">No se encontraron novedades.</span>
+                            <span class="text-muted">No se encontraron publicaciones que coincidan con la búsqueda.</span>
                         </td>
                     </tr>
                 @endforelse
