@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\News;
 use App\Models\User;
+use App\Models\Lot;
 use App\Models\Notification;
 use App\Mail\NewsPublishedMail;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class NewsController extends Controller
      */
     public function index(Request $request)
     {
-        $query = News::query();
+        $query = News::with('lots');
 
         if ($request->filled('status')) {
             $query->where('status', $request->input('status'));
@@ -43,7 +44,8 @@ class NewsController extends Controller
      */
     public function create()
     {
-        return view('admin.news.create');
+        $lots = Lot::with('owner')->orderByRaw('CAST(number AS UNSIGNED), number ASC')->get();
+        return view('admin.news.create', compact('lots'));
     }
 
     /**
@@ -57,14 +59,22 @@ class NewsController extends Controller
             'content' => 'required|string',
             'status' => 'required|string|in:draft,published,archived',
             'visibility' => 'required|string|in:public,internal',
+            'recipients_type' => 'required|string|in:all,specific_lots',
+            'lot_ids' => 'nullable|array',
+            'lot_ids.*' => 'exists:lots,id',
             'published_at' => 'nullable|date',
             'file' => 'nullable|file|max:25600',
             'image' => 'nullable|image|max:10240',
         ]);
 
-        $data = $request->except(['notify_portal', 'send_email', 'file', 'image']);
+        if ($request->input('recipients_type') === 'specific_lots' && empty($request->input('lot_ids'))) {
+            return back()->withInput()->withErrors(['lot_ids' => 'Debe seleccionar al menos un lote para el alcance específico.']);
+        }
+
+        $data = $request->except(['notify_portal', 'send_email', 'file', 'image', 'lot_ids']);
         $data['user_id'] = auth()->id();
         $data['is_published'] = ($request->status === 'published');
+        $data['recipients_type'] = $request->input('recipients_type', 'all');
         
         if ($request->status === 'published') {
             $data['published_at'] = $request->filled('published_at') ? $request->published_at : now();
@@ -83,6 +93,11 @@ class NewsController extends Controller
 
         $news = News::create($data);
 
+        // Sync targeted lots
+        if ($news->recipients_type === 'specific_lots' && $request->filled('lot_ids')) {
+            $news->lots()->sync($request->input('lot_ids'));
+        }
+
         // Notify owners/residents if published
         if ($news->status === 'published' && $news->visibility === 'public') {
             $this->notifyOwners(
@@ -94,7 +109,7 @@ class NewsController extends Controller
 
         $msg = 'Novedad creada correctamente.';
         if ($news->status === 'published' && $request->boolean('send_email', true)) {
-            $msg .= ' Se enviaron las notificaciones por portal y correo electrónico a los propietarios.';
+            $msg .= ' Se enviaron las notificaciones por portal y correo electrónico a los destinatarios.';
         }
 
         return redirect()->route('admin.news.index')->with('success', $msg);
@@ -105,7 +120,10 @@ class NewsController extends Controller
      */
     public function edit(News $news)
     {
-        return view('admin.news.edit', compact('news'));
+        $news->load('lots');
+        $lots = Lot::with('owner')->orderByRaw('CAST(number AS UNSIGNED), number ASC')->get();
+        $selectedLotIds = $news->lots->pluck('id')->toArray();
+        return view('admin.news.edit', compact('news', 'lots', 'selectedLotIds'));
     }
 
     /**
@@ -119,15 +137,23 @@ class NewsController extends Controller
             'content' => 'required|string',
             'status' => 'required|string|in:draft,published,archived',
             'visibility' => 'required|string|in:public,internal',
+            'recipients_type' => 'required|string|in:all,specific_lots',
+            'lot_ids' => 'nullable|array',
+            'lot_ids.*' => 'exists:lots,id',
             'published_at' => 'nullable|date',
             'file' => 'nullable|file|max:25600',
             'image' => 'nullable|image|max:10240',
         ]);
 
+        if ($request->input('recipients_type') === 'specific_lots' && empty($request->input('lot_ids'))) {
+            return back()->withInput()->withErrors(['lot_ids' => 'Debe seleccionar al menos un lote para el alcance específico.']);
+        }
+
         $wasPublished = ($news->status === 'published');
 
-        $data = $request->except(['notify_portal', 'send_email', 'file', 'image', 'remove_file', 'remove_image']);
+        $data = $request->except(['notify_portal', 'send_email', 'file', 'image', 'remove_file', 'remove_image', 'lot_ids']);
         $data['is_published'] = ($request->status === 'published');
+        $data['recipients_type'] = $request->input('recipients_type', 'all');
         
         if ($request->status === 'published') {
             if (!$news->published_at) {
@@ -164,6 +190,13 @@ class NewsController extends Controller
 
         $news->update($data);
 
+        // Sync targeted lots
+        if ($news->recipients_type === 'specific_lots' && $request->filled('lot_ids')) {
+            $news->lots()->sync($request->input('lot_ids'));
+        } else {
+            $news->lots()->detach();
+        }
+
         // Send notifications if newly published or explicitly requested
         if ($news->status === 'published' && $news->visibility === 'public') {
             if (!$wasPublished || $request->boolean('send_email') || $request->boolean('notify_portal')) {
@@ -190,6 +223,7 @@ class NewsController extends Controller
             Storage::disk('public')->delete($news->image_path);
         }
 
+        $news->lots()->detach();
         $news->delete();
         return redirect()->route('admin.news.index')->with('success', 'Novedad eliminada correctamente.');
     }
@@ -204,14 +238,34 @@ class NewsController extends Controller
         }
 
         // Target all owner, tenant, and board users
-        $recipients = User::where(function ($q) {
+        $query = User::where(function ($q) {
                 $q->whereIn('relationship_type', ['owner', 'tenant', 'board'])
                   ->orWhereHas('roles', function ($rq) {
                       $rq->whereIn('name', ['owner', 'tenant', 'board']);
                   });
             })
-            ->where('status', 'active')
-            ->get();
+            ->where('status', 'active');
+
+        // Filter by targeted lots if specific
+        if ($news->recipients_type === 'specific_lots') {
+            $targetLotIds = $news->lots()->pluck('lots.id')->toArray();
+            if (!empty($targetLotIds)) {
+                $query->where(function ($uq) use ($targetLotIds) {
+                    $uq->whereHas('functionalUnits', function ($fuq) use ($targetLotIds) {
+                        $fuq->whereIn('lot_id', $targetLotIds);
+                    })
+                    ->orWhereIn('email', function ($eq) use ($targetLotIds) {
+                        $eq->select('email')
+                           ->from('owners')
+                           ->join('lots', 'lots.current_owner_id', '=', 'owners.id')
+                           ->whereIn('lots.id', $targetLotIds)
+                           ->whereNotNull('email');
+                    });
+                });
+            }
+        }
+
+        $recipients = $query->get();
 
         foreach ($recipients as $user) {
             // 1. In-App Notification (Campanita)

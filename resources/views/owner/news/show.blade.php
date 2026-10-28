@@ -8,9 +8,14 @@
     <div class="col-lg-8">
         <div class="ios-card p-4">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-ios pb-3">
-                <div>
+                <div class="d-flex align-items-center flex-wrap gap-2">
                     <span class="badge bg-secondary-subtle text-secondary badge-ios">ANUNCIO</span>
-                    <small class="text-muted ms-2">Publicado el {{ $news->published_at ? $news->published_at->format('d/m/Y H:i') : ($news->created_at ? $news->created_at->format('d/m/Y H:i') : '') }}</small>
+                    @if($news->recipients_type === 'specific_lots')
+                        <span class="badge bg-warning-subtle text-dark border border-warning-subtle badge-ios">
+                            <i class="bi bi-geo-alt-fill text-warning me-1"></i>Comunicado para su lote
+                        </span>
+                    @endif
+                    <small class="text-muted ms-1">Publicado el {{ $news->published_at ? $news->published_at->format('d/m/Y H:i') : ($news->created_at ? $news->created_at->format('d/m/Y H:i') : '') }}</small>
                 </div>
                 <a href="{{ route('owner.news.index') }}" class="btn btn-sm btn-ios btn-ios-secondary">Volver</a>
             </div>

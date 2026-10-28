@@ -21,4 +21,33 @@ class News extends Model
         'published_at' => 'datetime',
         'is_published' => 'boolean',
     ];
+
+    /**
+     * Relationship: Lots targeted by this news publication.
+     */
+    public function lots(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Lot::class, 'news_lots');
+    }
+
+    /**
+     * Check if news applies to all lots.
+     */
+    public function isTargetedToAll(): bool
+    {
+        return $this->recipients_type !== 'specific_lots';
+    }
+
+    /**
+     * Check if news applies to a given lot.
+     */
+    public function appliesToLot(int|Lot $lot): bool
+    {
+        if ($this->isTargetedToAll()) {
+            return true;
+        }
+
+        $lotId = $lot instanceof Lot ? $lot->id : $lot;
+        return $this->lots->contains('id', $lotId);
+    }
 }

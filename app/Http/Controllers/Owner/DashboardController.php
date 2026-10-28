@@ -49,8 +49,32 @@ class DashboardController extends Controller
         }
 
         // Recent news / announcements
-        $announcements = News::where('is_published', true)
-            ->orderBy('publish_date', 'desc')
+        $announcementsQuery = News::where(function ($q) {
+                $q->where('is_published', true)
+                  ->orWhere('status', 'published');
+            })
+            ->where('visibility', '!=', 'internal');
+
+        if (!$user->isAdmin() && !$user->isSuperAdmin()) {
+            $userLotIds = $lots->pluck('id')->filter()->unique()->toArray();
+            $ownerLotIds = Lot::whereHas('owner', function ($oq) use ($user) {
+                $oq->where('email', $user->email);
+            })->pluck('id')->toArray();
+            $myLotIds = array_unique(array_merge($userLotIds, $ownerLotIds));
+
+            $announcementsQuery->where(function ($targetQuery) use ($myLotIds) {
+                $targetQuery->where('recipients_type', 'all')
+                    ->orWhere(function ($sq) use ($myLotIds) {
+                        $sq->where('recipients_type', 'specific_lots')
+                           ->whereHas('lots', function ($lq) use ($myLotIds) {
+                               $lq->whereIn('lots.id', $myLotIds);
+                           });
+                    });
+            });
+        }
+
+        $announcements = $announcementsQuery
+            ->orderByRaw('COALESCE(published_at, publish_date, created_at) DESC')
             ->take(3)
             ->get();
 

@@ -44,6 +44,7 @@
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">TITULO</th>
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">RESUMEN</th>
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">ADJUNTOS</th>
+                    <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">DESTINATARIOS</th>
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">VISIBILIDAD</th>
                     <th class="text-muted" style="font-size: 0.85rem; font-weight: 600;">ESTADO</th>
                     <th class="text-muted text-end" style="font-size: 0.85rem; font-weight: 600; width: 15%;">ACCIONES</th>
@@ -77,6 +78,20 @@
                                     <span class="text-muted" style="font-size: 0.8rem;">-</span>
                                 @endif
                             </div>
+                        </td>
+                        <td>
+                            @if($n->recipients_type === 'specific_lots')
+                                @php
+                                    $lotNames = $n->lots->map(fn($l) => 'Lote ' . $l->number)->join(', ');
+                                @endphp
+                                <span class="badge bg-warning-subtle text-dark border border-warning-subtle badge-ios" title="{{ $lotNames }}">
+                                    <i class="bi bi-geo-alt-fill text-warning me-1"></i>{{ $n->lots->count() }} lotes
+                                </span>
+                            @else
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle badge-ios">
+                                    <i class="bi bi-globe me-1"></i>Todos los lotes
+                                </span>
+                            @endif
                         </td>
                         <td>
                             @if($n->visibility === 'public')

@@ -77,4 +77,9 @@ class Lot extends Model
     {
         return $this->hasMany(Reservation::class);
     }
+
+    public function news(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(News::class, 'news_lots');
+    }
 }

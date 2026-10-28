@@ -13,7 +13,14 @@
                 <div class="border-ios p-4 rounded-4 bg-body-tertiary h-100 d-flex flex-column justify-content-between">
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="badge bg-secondary-subtle text-secondary badge-ios">COMUNICADO</span>
+                            <div>
+                                <span class="badge bg-secondary-subtle text-secondary badge-ios">COMUNICADO</span>
+                                @if($n->recipients_type === 'specific_lots')
+                                    <span class="badge bg-warning-subtle text-dark border border-warning-subtle badge-ios ms-1">
+                                        <i class="bi bi-geo-alt-fill text-warning me-1"></i>Para su lote
+                                    </span>
+                                @endif
+                            </div>
                             <small class="text-muted">{{ $n->published_at ? $n->published_at->format('d/m/Y') : ($n->created_at ? $n->created_at->format('d/m/Y') : '') }}</small>
                         </div>
                         

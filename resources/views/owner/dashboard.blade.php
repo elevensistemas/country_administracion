@@ -128,8 +128,15 @@
                 @forelse($announcements as $ann)
                     <div class="border-bottom border-ios pb-2 last-border-none">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="badge bg-success-subtle text-success badge-ios" style="font-size: 0.6rem;">COMUNICADO</span>
-                            <small class="text-muted" style="font-size: 0.75rem;">{{ $ann->publish_date->format('d/m/Y') }}</small>
+                            <div>
+                                <span class="badge bg-success-subtle text-success badge-ios" style="font-size: 0.6rem;">COMUNICADO</span>
+                                @if($ann->recipients_type === 'specific_lots')
+                                    <span class="badge bg-warning-subtle text-dark border border-warning-subtle badge-ios ms-1" style="font-size: 0.6rem;">
+                                        <i class="bi bi-geo-alt-fill text-warning me-1"></i>Para su lote
+                                    </span>
+                                @endif
+                            </div>
+                            <small class="text-muted" style="font-size: 0.75rem;">{{ $ann->publish_date ? $ann->publish_date->format('d/m/Y') : ($ann->published_at ? $ann->published_at->format('d/m/Y') : $ann->created_at->format('d/m/Y')) }}</small>
                         </div>
                         <h6 class="fw-bold m-0" style="font-size: 0.95rem;">
                             <a href="{{ route('owner.news.show', $ann) }}" class="text-decoration-none text-reset">
