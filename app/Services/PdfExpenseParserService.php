@@ -43,13 +43,14 @@ class PdfExpenseParserService
             while ($i < $n) {
                 $line = $lines[$i];
                 
-                // Fix numbers concatenated without spaces by the PDF text extractor (e.g. 753.984,00100.000,00 or 21.730.499,27127)
-                $line = preg_replace('/(\,\d{2})(\d+)/', '$1 $2', $line);
+                // Fix numbers concatenated without spaces by the PDF text extractor (e.g. 753.984,00100.000,00 or 1.580.416,47-43.874,76)
+                $line = preg_replace('/(\,\d{2})(-|\d+)/', '$1 $2', $line);
+                $line = preg_replace('/(\,\d{2})([A-Za-z])/', '$1 $2', $line);
                 
-                // Case 1: Standard single or concatenated line starting with UF number
-                if (preg_match('/^(\d{1,3})\s+(.+?)\s*(\d+[\,\.]\d{2})\s+([\d\.\,\-]+(?:\s+[\d\.\,\-]+){7,13})/u', $line, $m)) {
+                // Case 1: Standard line starting with UF number (with or without space before name, handling tabs)
+                if (preg_match('/^(\d{1,3})\s*(.+?)[\s\t]+(\d+[\,\.]\d{2})\s+([\d\.\,\-]+(?:\s+[\d\.\,\-]+){7,15})/u', $line, $m)) {
                     $uf = intval($m[1]);
-                    if ($uf >= 1 && $uf <= 150) {
+                    if ($uf >= 1 && $uf <= 131) {
                         $prop = trim($m[2]);
                         $pct = $this->cleanNum($m[3]);
                         $numTokens = preg_split('/\s+/', trim($m[4]));
@@ -62,9 +63,10 @@ class PdfExpenseParserService
                 // Case 2: Broken name across 2 lines (e.g. accented characters generating linebreaks)
                 if ($i + 1 < $n && preg_match('/^(\d{1,3})\s+([^0-9\n\r]+)$/u', $line, $m1)) {
                     $ufCandidate = intval($m1[1]);
-                    if ($ufCandidate >= 1 && $ufCandidate <= 150) {
-                        $nextLine = preg_replace('/(\,\d{2})(\d+)/', '$1 $2', $lines[$i + 1]);
-                        if (preg_match('/^(.*?)\s*(\d+[\,\.]\d{2})\s+([\d\.\,\-]+(?:\s+[\d\.\,\-]+){7,13})/u', $nextLine, $m2)) {
+                    if ($ufCandidate >= 1 && $ufCandidate <= 131) {
+                        $nextLine = preg_replace('/(\,\d{2})(-|\d+)/', '$1 $2', $lines[$i + 1]);
+                        $nextLine = preg_replace('/(\,\d{2})([A-Za-z])/', '$1 $2', $nextLine);
+                        if (preg_match('/^(.*?)\s*(\d+[\,\.]\d{2})\s+([\d\.\,\-]+(?:\s+[\d\.\,\-]+){7,15})/u', $nextLine, $m2)) {
                             $prop = trim($m1[2] . ' ' . $m2[1]);
                             $pct = $this->cleanNum($m2[2]);
                             $numTokens = preg_split('/\s+/', trim($m2[3]));
@@ -78,13 +80,13 @@ class PdfExpenseParserService
                 // Case 3: Vertical multi-line format (e.g. table cells wrapping in PDF)
                 if (preg_match('/^(\d{1,3})$/', $line, $mUf)) {
                     $uf = intval($mUf[1]);
-                    if ($uf >= 1 && $uf <= 150 && $i + 1 < $n) {
+                    if ($uf >= 1 && $uf <= 131 && $i + 1 < $n) {
                         $propCandidate = $lines[$i + 1];
                         if (!preg_match('/^[\d\.\,\-]+$/', $propCandidate) && !str_contains($propCandidate, 'SOCIEDAD') && !str_contains($propCandidate, 'SALDOS')) {
                             $collectedNumbers = [];
                             $j = $i + 2;
                             while ($j < $n && preg_match('/^[\d\.\,\-]+$/', $lines[$j])) {
-                                $cLine = preg_replace('/(\,\d{2})(\d+)/', '$1 $2', $lines[$j]);
+                                $cLine = preg_replace('/(\,\d{2})(-|\d+)/', '$1 $2', $lines[$j]);
                                 foreach (preg_split('/\s+/', trim($cLine)) as $tok) {
                                     if ($tok !== '') $collectedNumbers[] = $tok;
                                 }
@@ -112,8 +114,11 @@ class PdfExpenseParserService
     private function parseTokens(int $uf, string $prop, float $pct, array $tokens): array
     {
         // Clean trailing repeated UF if present at the end of the row
-        if (count($tokens) > 0 && intval($tokens[count($tokens) - 1]) === $uf) {
-            array_pop($tokens);
+        if (count($tokens) > 10) {
+            $lastTok = $tokens[count($tokens) - 1];
+            if (intval($lastTok) === $uf || str_ends_with($lastTok, (string)$uf)) {
+                array_pop($tokens);
+            }
         }
         
         // Clean name from PDF encoding artifacts / mojibake
@@ -140,8 +145,8 @@ class PdfExpenseParserService
             $totalPronto = $this->cleanNum($tokens[9] ?? 0);
             $totalPagar = $this->cleanNum($tokens[10] ?? 0);
         } elseif ($c == 10) {
-            $expExt = 0;
-            $canon = $this->cleanNum($tokens[6] ?? 0);
+            $expExt = $this->cleanNum($tokens[6] ?? 0);
+            $canon = 0;
             $redondeo = $this->cleanNum($tokens[7] ?? 0);
             $totalPronto = $this->cleanNum($tokens[8] ?? 0);
             $totalPagar = $this->cleanNum($tokens[9] ?? 0);

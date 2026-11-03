@@ -52,10 +52,90 @@ Route::get('/__migrate', function (Request $request) {
         @symlink($target, $link);
         Artisan::call('storage:link');
         return response('<pre>Storage link created: ' . (file_exists($link) ? 'SUCCESS' : 'FAILED') . "\n" . Artisan::output() . '</pre>', 200);
-    } elseif ($action === 'git_pull') {
-        $output = shell_exec('git pull origin main 2>&1');
-        Artisan::call('optimize:clear');
-        return response('<pre>' . ($output ?: 'No output') . "\n" . Artisan::output() . '</pre>', 200);
+    } elseif ($action === 'periods_status') {
+        $periods = \App\Models\BillingPeriod::withCount('expenses')->get();
+        return response()->json([
+            'periods' => $periods,
+            'nov_count' => \App\Models\Expense::whereHas('billingPeriod', function($q) { $q->where('period', 'like', '%11%'); })->count(),
+            'oct_count' => \App\Models\Expense::whereHas('billingPeriod', function($q) { $q->where('period', 'like', '%10%'); })->count(),
+            'payments_count' => \App\Models\Payment::count(),
+            'payments_recent' => \App\Models\Payment::latest()->take(5)->get(),
+        ]);
+    } elseif ($action === 'fix_october_expenses') {
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        try {
+            // 1. Delete any November 2026 period
+            $novPeriods = \App\Models\BillingPeriod::where('period', '2026-11')->get();
+            foreach ($novPeriods as $np) {
+                $expIds = \App\Models\Expense::where('billing_period_id', $np->id)->pluck('id');
+                \App\Models\ExpenseItem::whereIn('expense_id', $expIds)->delete();
+                \App\Models\LotHistoryEvent::where('related_model_type', \App\Models\Expense::class)->whereIn('related_model_id', $expIds)->delete();
+                \App\Models\Expense::where('billing_period_id', $np->id)->forceDelete();
+                $np->delete();
+            }
+
+            // 2. Prepare October 2026 period
+            $octPeriod = \App\Models\BillingPeriod::firstOrCreate(
+                ['period' => '2026-10'],
+                [
+                    'start_date' => '2026-10-01',
+                    'end_date' => '2026-10-31',
+                    'status' => 'closed',
+                ]
+            );
+            $octPeriod->update([
+                'start_date' => '2026-10-01',
+                'end_date' => '2026-10-31',
+                'status' => 'closed',
+            ]);
+
+            // Clear old expenses for October period if any
+            $octExpIds = \App\Models\Expense::where('billing_period_id', $octPeriod->id)->pluck('id');
+            \App\Models\ExpenseItem::whereIn('expense_id', $octExpIds)->delete();
+            \App\Models\LotHistoryEvent::where('related_model_type', \App\Models\Expense::class)->whereIn('related_model_id', $octExpIds)->delete();
+            \App\Models\Expense::where('billing_period_id', $octPeriod->id)->forceDelete();
+
+            // 3. File handling: ensure boletin_y_liquidacion_2026_10.pdf exists
+            $storageExpensesDir = storage_path('app/public/expenses');
+            if (!file_exists($storageExpensesDir)) {
+                @mkdir($storageExpensesDir, 0755, true);
+            }
+
+            $sourcePdf = $storageExpensesDir . '/boletin_y_liquidacion_2026_11.pdf';
+            $targetPdf = $storageExpensesDir . '/boletin_y_liquidacion_2026_10.pdf';
+
+            if (file_exists($sourcePdf)) {
+                @copy($sourcePdf, $targetPdf);
+                @unlink($sourcePdf);
+            }
+
+            if (!file_exists($targetPdf)) {
+                return response()->json(['success' => false, 'error' => 'No se encontró el PDF en ' . $targetPdf], 500);
+            }
+
+            // 4. Parse and import 131 rows
+            $parser = new \App\Services\PdfExpenseParserService();
+            $rows = $parser->parsePdf($targetPdf);
+
+            $importedCount = $parser->importExpenses($octPeriod, $rows, 'expenses/boletin_y_liquidacion_2026_10.pdf');
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Todo lo emitido fue enviado correctamente a Octubre y se eliminó el período de Noviembre.',
+                'imported_count' => $importedCount,
+                'october_period_id' => $octPeriod->id,
+                'periods' => \App\Models\BillingPeriod::withCount('expenses')->get(),
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
+        }
     } else {
         Artisan::call('migrate', ['--force' => true]);
     }
