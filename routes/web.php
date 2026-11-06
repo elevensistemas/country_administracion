@@ -52,6 +52,63 @@ Route::get('/__migrate', function (Request $request) {
         @symlink($target, $link);
         Artisan::call('storage:link');
         return response('<pre>Storage link created: ' . (file_exists($link) ? 'SUCCESS' : 'FAILED') . "\n" . Artisan::output() . '</pre>', 200);
+    } elseif ($action === 'git_pull') {
+        $output = shell_exec('git pull origin main 2>&1');
+        Artisan::call('optimize:clear');
+        return response('<pre>' . ($output ?: 'No output') . "\n" . Artisan::output() . '</pre>', 200);
+    } elseif ($action === 'reject_payment') {
+        $paymentId = $request->input('payment_id', 34);
+        $payment = \App\Models\Payment::find($paymentId);
+        if (!$payment) {
+            return response()->json(['success' => false, 'error' => 'Pago no encontrado'], 404);
+        }
+        
+        $reason = $request->input('reason', 'Rechazado por error en el importe cargado ($78.544.042). Ya recibimos el comprobante por administración.');
+        
+        \Illuminate\Support\Facades\DB::transaction(function() use ($payment, $reason) {
+            $payment->update([
+                'status' => 'rejected',
+                'notes' => $reason,
+            ]);
+
+            if ($payment->lot) {
+                $evType = \App\Models\LotHistoryEventType::where('name', 'payment_rejected')->first();
+                $evCat = \App\Models\LotHistoryCategory::where('name', 'finance')->first();
+
+                \App\Models\LotHistoryEvent::create([
+                    'lot_id' => $payment->lot_id,
+                    'functional_unit_id' => $payment->functional_unit_id,
+                    'event_type_id' => $evType ? $evType->id : 1,
+                    'category_id' => $evCat ? $evCat->id : 1,
+                    'related_model_type' => \App\Models\Payment::class,
+                    'related_model_id' => $payment->id,
+                    'owner_id' => $payment->lot->current_owner_id,
+                    'tenant_id' => $payment->lot->current_tenant_id,
+                    'user_id' => $payment->user_id,
+                    'title' => "Pago Rechazado",
+                    'description' => "Se rechazó el pago informado de $ " . number_format($payment->amount, 2, ',', '.') . " (Operación N°: {$payment->operation_number}). Motivo: " . $reason,
+                    'event_date' => now(),
+                    'visibility' => 'public',
+                ]);
+            }
+
+            if ($payment->user_id) {
+                $lotNumber = $payment->lot ? $payment->lot->number : '';
+                \App\Models\Notification::create([
+                    'user_id' => $payment->user_id,
+                    'title' => "Pago Observado / Rechazado",
+                    'message' => "Tu pago de $ " . number_format($payment->amount, 2, ',', '.') . " (Lote {$lotNumber}) no pudo ser validado. Motivo: {$reason}",
+                    'type' => 'payment',
+                    'link' => route('owner.payments.history'),
+                ]);
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => "Pago #{$paymentId} rechazado correctamente.",
+            'payment' => $payment->fresh(),
+        ]);
     } elseif ($action === 'periods_status') {
         $periods = \App\Models\BillingPeriod::withCount('expenses')->get();
         return response()->json([
